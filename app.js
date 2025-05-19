@@ -67,7 +67,7 @@ const content = {
   },
   travel: {
     en: {
-      title: "Travel Information",
+      title: "Travel",
       flights: "Flights",
       hotels: "Hotels",
       laxInfo: "We recommend flying into LAX. From there you can either rent a car or use Uber/Lyft.",
@@ -75,7 +75,7 @@ const content = {
       groupCode: "Group Code"
     },
     pl: {
-      title: "Informacje o podróży",
+      title: "Podróż",
       flights: "Loty",
       hotels: "Hotele",
       laxInfo: "Zalecamy przylot na LAX. Stamtąd możesz wynająć samochód lub skorzystać z Uber/Lyft.",
@@ -83,7 +83,7 @@ const content = {
       groupCode: "Kod grupy"
     },
     gu: {
-      title: "પ્રવાસની માહિતી",
+      title: "મુસાફરી",
       flights: "ફ્લાઇટ્સ",
       hotels: "હોટેલ્સ",
       laxInfo: "અમે LAX માં ફ્લાઇટ કરવાની ભલામણ કરીએ છીએ. ત્યાંથી તમે કાર ભાડે લઈ શકો છો અથવા Uber/Lyft નો ઉપયોગ કરી શકો છો.",
@@ -182,14 +182,18 @@ window.setLanguage = function(lang) {
     }
   });
   
-  const isAdmin = sessionStorage.getItem("isAdmin") === "true";
-  
-  // Update navigation using currentRoute
-  renderNav(currentRoute, isAdmin, !currentUser?.hasRSVPed);
+  // Only update navigation if user is logged in
+  const uid = sessionStorage.getItem("weddingUser");
+  if (uid) {
+    const isAdmin = sessionStorage.getItem("isAdmin") === "true";
+    renderNav(currentRoute, isAdmin, !currentUser?.hasRSVPed);
+  }
   
   // Re-render current page without navigation
   if (currentUser) {
     routes[currentRoute].render(currentUser);
+  } else {
+    renderLogin(); // Re-render login page with new language
   }
 }
 
@@ -795,7 +799,7 @@ async function renderDetails()  {
     </div>
   `;
 }
-async function renderRegistry()   { app.innerHTML = `<h1>Registry</h1><p>…give us moneys…</p>`; }
+async function renderRegistry()   { app.innerHTML = `<h1>Registry</h1><p>…Not created yet…</p>`; }
 
 async function renderRSVP(user){
   const snap = await getDocs(query(collection(db,"users"),
@@ -804,9 +808,9 @@ async function renderRSVP(user){
   
   // Define events and their IDs
   const events = [
-    { id: "Church", title: "Catholic Ceremony" },
+    { id: "Church", title: "Church Ceremony" },
     { id: "WelcomeParty", title: "Welcome Party" },
-    { id: "MainWedding", title: "Wedding" },
+    { id: "MainWedding", title: "Main Wedding" },
     { id: "SundayBrunchEarly", title: "Sunday Brunch" },
     { id: "SundayBrunchLate", title: "Sunday Brunch" }
   ];
@@ -820,7 +824,7 @@ async function renderRSVP(user){
   });
 
   let html = `<h1>RSVP: ${user.groupId}</h1>
-    <table><thead><tr><th>Guest</th>`;
+    <table class="rsvp-table"><thead><tr><th>Guest</th>`;
   
   // Only show events that at least one member is invited to
   const invitedEvents = events.filter(ev => 
@@ -837,13 +841,13 @@ async function renderRSVP(user){
       if (m[key]) {
         const rsvpKey = `${m.uid}_${ev.id}`;
         const isChecked = rsvps[rsvpKey] ? 'checked' : '';
-        html += `<td><input type="checkbox"
+        html += `<td data-label="${ev.title}"><input type="checkbox"
                    data-uid="${m.uid}" data-event="${ev.id}"
                    ${isChecked}></td>`;
       }
     });
     // Add allergies input field
-    html += `<td><input type="text" class="allergies-input" 
+    html += `<td data-label="Allergies"><input type="text" class="allergies-input" 
               data-uid="${m.uid}" 
               value="${m.allergies || ''}" 
               placeholder="Enter any allergies"></td>`;
