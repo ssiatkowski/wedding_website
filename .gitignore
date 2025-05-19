@@ -1,0 +1,11 @@
+# Node modules
+node_modules/
+
+# Firebase service account (if you ever include it)
+serviceAccountKey.json
+
+# Local environment files
+.env
+
+# Build outputs (if you add one later)
+dist/
