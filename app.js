@@ -39,7 +39,8 @@ const content = {
       days: "days",
       hours: "hours",
       minutes: "minutes",
-      seconds: "seconds"
+      seconds: "seconds",
+      month: "September"
     },
     pl: {
       welcome: "Witamy",
@@ -48,7 +49,8 @@ const content = {
       days: "dni",
       hours: "godziny",
       minutes: "minuty",
-      seconds: "sekundy"
+      seconds: "sekundy",
+      month: "Wrzesień"
     },
     gu: {
       welcome: "સ્વાગત છે",
@@ -57,7 +59,8 @@ const content = {
       days: "દિવસો",
       hours: "કલાકો",
       minutes: "મિનિટ",
-      seconds: "સેકન્ડ"
+      seconds: "સેકન્ડ",
+      month: "સપ્ટેમ્બર"
     }
   },
   schedule: {
@@ -92,9 +95,39 @@ const content = {
     }
   },
   details: {
-    en: { title: "Details" },
-    pl: { title: "Szczegóły" },
-    gu: { title: "વિગતો" }
+    en: {
+      title: "Details",
+      rsvp: "RSVP",
+      rsvpText: "Please RSVP by July 13 so we can have an accurate headcount!",
+      location: "LOCATION",
+      locationText: "Our ceremony and reception are outdoors (though you can go in the house at any time) on a turf lawn. Please choose shoes that will be comfortable to wear on turf! Due to city noise ordinances we can't have music outdoors after 10pm; at that time we'll start the after party inside the house.",
+      weather: "WEATHER",
+      weatherText: "It's usually hot in the afternoon (~low 80s Fahrenheit) and cools down at night (~high 60s Fahrenheit).",
+      questions: "QUESTIONS",
+      questionsText: "Call or text either of us with any questions!"
+    },
+    pl: {
+      title: "Szczegóły",
+      rsvp: "RSVP",
+      rsvpText: "Prosimy o potwierdzenie obecności do 13 lipca, abyśmy mogli dokładnie zaplanować uroczystość!",
+      location: "LOKALIZACJA",
+      locationText: "Nasza ceremonia i przyjęcie odbędą się na zewnątrz (choć możesz wejść do domu w dowolnym momencie) na trawniku. Prosimy o wybór wygodnego obuwia na trawę! Ze względu na przepisy dotyczące hałasu w mieście nie możemy mieć muzyki na zewnątrz po 22:00; w tym czasie rozpoczniemy after party w domu.",
+      weather: "POGODA",
+      weatherText: "Zazwyczaj jest gorąco po południu (~27°C) i chłodniej w nocy (~20°C).",
+      questions: "PYTANIA",
+      questionsText: "Zadzwoń lub napisz do nas z jakimikolwiek pytaniami!"
+    },
+    gu: {
+      title: "વિગતો",
+      rsvp: "RSVP",
+      rsvpText: "ચોક્કસ માથાગણતી માટે 13 જુલાઈ સુધી RSVP કરો કૃપા કરીને!",
+      location: "સ્થાન",
+      locationText: "અમારી સમારંભ અને સ્વાગત બહાર (જોકે તમે કોઈપણ સમયે ઘરમાં જઈ શકો છો) ટર્ફ લોન પર છે. કૃપા કરીને ટર્ફ પર પહેરવા માટે આરામદાયક જૂતા પસંદ કરો! શહેરના ઘોંઘાટના ઓર્ડિનન્સને કારણે આપણે રાત્રે 10 વાગ્યા પછી બહાર સંગીત નથી રાખી શકતા; તે સમયે આપણે ઘરની અંદર after party શરૂ કરીશું.",
+      weather: "હવામાન",
+      weatherText: "દિવસે સામાન્ય રીતે ગરમ હોય છે (~27°C) અને રાત્રે ઠંડુ પડે છે (~20°C).",
+      questions: "પ્રશ્નો",
+      questionsText: "કોઈપણ પ્રશ્નો માટે અમને કૉલ કરો અથવા મેસેજ કરો!"
+    }
   },
   photos: {
     en: { title: "Photos" },
@@ -107,9 +140,51 @@ const content = {
     gu: { title: "રજિસ્ટ્રી" }
   },
   rsvp: {
-    en: { title: "RSVP" },
-    pl: { title: "RSVP" },
-    gu: { title: "RSVP" }
+    en: {
+      title: "RSVP",
+      submit: "Submit RSVP",
+      resubmit: "Resubmit RSVP",
+      allergies: "Allergies",
+      allergiesPlaceholder: "Enter any allergies",
+      firstName: "First Name",
+      lastName: "Last Name",
+      firstNamePlaceholder: "First Name",
+      lastNamePlaceholder: "Last Name",
+      plusOneTitle: "Add a Guest",
+      plusOneDescription: "You can add one guest to your group. Please provide their details below.",
+      instructions: "Please indicate which events you will be able to attend by checking the corresponding boxes. If you have any dietary restrictions or allergies, please note them in the allergies section. Once you have completed your selections, click the submit button at the bottom of the page.",
+      plusOneInstructions: "If you would like to bring a guest, please provide their information in the section below. They will be added to your group and can attend the same events as you."
+    },
+    pl: {
+      title: "RSVP",
+      submit: "Wyślij RSVP",
+      resubmit: "Wyślij ponownie RSVP",
+      allergies: "Alergie",
+      allergiesPlaceholder: "Wpisz alergie",
+      firstName: "Imię",
+      lastName: "Nazwisko",
+      firstNamePlaceholder: "Imię",
+      lastNamePlaceholder: "Nazwisko",
+      plusOneTitle: "Dodaj gościa",
+      plusOneDescription: "Możesz dodać jednego gościa do swojej grupy. Podaj jego dane poniżej.",
+      instructions: "Prosimy o zaznaczenie wydarzeń, w których będziecie mogli uczestniczyć, zaznaczając odpowiednie pola. Jeśli macie jakieś ograniczenia dietetyczne lub alergie, prosimy o ich zaznaczenie w sekcji alergii. Po dokonaniu wyborów, kliknij przycisk wyślij na dole strony.",
+      plusOneInstructions: "Jeśli chcielibyście przyprowadzić gościa, prosimy o podanie jego danych w sekcji poniżej. Zostanie on dodany do waszej grupy i będzie mógł uczestniczyć w tych samych wydarzeniach co wy."
+    },
+    gu: {
+      title: "RSVP",
+      submit: "RSVP મોકલો",
+      resubmit: "RSVP ફરીથી મોકલો",
+      allergies: "એલર્જી",
+      allergiesPlaceholder: "કોઈપણ એલર્જી લખો",
+      firstName: "પ્રથમ નામ",
+      lastName: "છેલ્લું નામ",
+      firstNamePlaceholder: "પ્રથમ નામ",
+      lastNamePlaceholder: "છેલ્લું નામ",
+      plusOneTitle: "મહેમાન ઉમેરો",
+      plusOneDescription: "તમે તમારા જૂથમાં એક મહેમાન ઉમેરી શકો છો. કૃપા કરીને તેમની વિગતો નીચે આપો.",
+      instructions: "કૃપા કરીને તમે જે કાર્યક્રમોમાં ભાગ લઈ શકશો તેના માટે સંબંધિત બોક્સ ચેક કરો. જો તમને કોઈ ખોરાક પ્રતિબંધો અથવા એલર્જી હોય, તો કૃપા કરીને એલર્જી વિભાગમાં તેની નોંધ કરો. તમારી પસંદગી પૂર્ણ થયા પછી, પૃષ્ઠના તળિયે સબમિટ બટન પર ક્લિક કરો.",
+      plusOneInstructions: "જો તમે કોઈ મહેમાનને લાવવા માંગતા હો, તો કૃપા કરીને નીચેના વિભાગમાં તેમની માહિતી આપો. તેમને તમારા જૂથમાં ઉમેરવામાં આવશે અને તમે જે કાર્યક્રમોમાં ભાગ લશો તેમાં ભાગ લઈ શકશે."
+    }
   },
   admin: {
     en: { title: "Admin" },
@@ -377,7 +452,15 @@ async function navigate(route){
   // Update current route
   currentRoute = route;
   
+  // Update navigation
   renderNav(route, isAdmin, !currentUser.hasRSVPed);
+  
+  // Show navbar and hide menu button
+  const navbar = document.getElementById('main-nav');
+  const menuBtn = document.querySelector('.menu-button');
+  if (navbar) navbar.classList.remove('hidden');
+  if (menuBtn) menuBtn.classList.remove('visible');
+  
   await routes[route].render(currentUser);
 }
 
@@ -390,7 +473,7 @@ async function renderHome(user){
           <h1>${getContent('home', 'welcome')}, ${user.preferredName ? user.preferredName : user.firstName}!</h1>
           <p class="subtitle">${getContent('home', 'subtitle')}</p>
           <div class="date-location">
-            <p class="date">September 13, 2025</p>
+            <p class="date">${getContent('home', 'month')} 13, 2025</p>
             <p class="location">Los Angeles, CA</p>
           </div>
           <div class="countdown">
@@ -695,7 +778,6 @@ async function renderPhotos() {
         'images/photos/photo34.jpg',
         'images/photos/photo35.jpg',
         'images/photos/photo36.jpg',
-        
       ];
 
       // Create photo elements
@@ -705,9 +787,6 @@ async function renderPhotos() {
         item.innerHTML = `
           <div class="photo-wrapper">
             <img src="${photo}" alt="Wedding Photo" loading="lazy">
-            <div class="photo-overlay">
-              <i class="fas fa-expand"></i>
-            </div>
           </div>
         `;
 
@@ -719,15 +798,45 @@ async function renderPhotos() {
         photoGallery.appendChild(item);
       });
 
-      // Initialize Masonry after images are loaded
-      imagesLoaded('#photoGallery', function() {
-        new Masonry('#photoGallery', {
-          itemSelector: '.photo-item',
-          columnWidth: '.photo-item',
-          percentPosition: true,
-          transitionDuration: '0.3s'
+      // Initialize Masonry
+      let masonry = null;
+      function initMasonry() {
+        if (masonry) {
+          masonry.destroy();
+        }
+        
+        // Wait for images to load
+        imagesLoaded('#photoGallery', function() {
+          // Initialize Masonry
+          masonry = new Masonry('#photoGallery', {
+            itemSelector: '.photo-item',
+            columnWidth: '.photo-item',
+            percentPosition: true,
+            transitionDuration: '0.3s',
+            gutter: 10,
+            fitWidth: true,
+            initLayout: true
+          });
+
+          // Force layout update after a short delay to ensure images are loaded
+          setTimeout(() => {
+            if (masonry) {
+              masonry.layout();
+            }
+          }, 100);
         });
+      }
+
+      // Initialize on load
+      initMasonry();
+
+      // Reinitialize on resize with debounce
+      let resizeTimer;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(initMasonry, 250);
       });
+
     } catch (error) {
       console.error('Error loading photos:', error);
       document.getElementById('photoGallery').innerHTML = `
@@ -746,7 +855,6 @@ async function renderPhotos() {
     lightbox.innerHTML = `
       <div class="lightbox-content">
         <img src="${imageSrc}" alt="Wedding Photo">
-        <button class="lightbox-close">&times;</button>
       </div>
     `;
 
@@ -754,11 +862,9 @@ async function renderPhotos() {
     document.body.style.overflow = 'hidden';
 
     // Close lightbox on click
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox || e.target.className === 'lightbox-close') {
-        lightbox.remove();
-        document.body.style.overflow = '';
-      }
+    lightbox.addEventListener('click', () => {
+      lightbox.remove();
+      document.body.style.overflow = '';
     });
   }
 
@@ -770,30 +876,30 @@ async function renderDetails()  {
   app.innerHTML = `
     <div class="details-container">
       <div class="details-section">
-        <h2><i class="fas fa-calendar-check"></i> RSVP</h2>
+        <h2><i class="fas fa-calendar-check"></i> ${getContent('details', 'rsvp')}</h2>
         <div class="details-card">
-          <p>Please RSVP by July 13 so we can have an accurate headcount!</p>
+          <p>${getContent('details', 'rsvpText')}</p>
         </div>
       </div>
 
       <div class="details-section">
-        <h2><i class="fas fa-map-marked-alt"></i> LOCATION</h2>
+        <h2><i class="fas fa-map-marked-alt"></i> ${getContent('details', 'location')}</h2>
         <div class="details-card">
-          <p>Our ceremony and reception are outdoors (though you can go in the house at any time) on a turf lawn. Please choose shoes that will be comfortable to wear on turf! Due to city noise ordinances we can't have music outdoors after 10pm; at that time we'll start the after party inside the house.</p>
+          <p>${getContent('details', 'locationText')}</p>
         </div>
       </div>
 
       <div class="details-section">
-        <h2><i class="fas fa-cloud-sun"></i> WEATHER</h2>
+        <h2><i class="fas fa-cloud-sun"></i> ${getContent('details', 'weather')}</h2>
         <div class="details-card">
-          <p>It's usually hot in the afternoon (~low 80s Fahrenheit) and cools down at night (~high 60s Fahrenheit).</p>
+          <p>${getContent('details', 'weatherText')}</p>
         </div>
       </div>
 
       <div class="details-section">
-        <h2><i class="fas fa-question-circle"></i> QUESTIONS</h2>
+        <h2><i class="fas fa-question-circle"></i> ${getContent('details', 'questions')}</h2>
         <div class="details-card">
-          <p>Call or text either of us with any questions!</p>
+          <p>${getContent('details', 'questionsText')}</p>
         </div>
       </div>
     </div>
@@ -823,8 +929,17 @@ async function renderRSVP(user){
     rsvps[`${data.userId}_${data.eventId}`] = data.attending;
   });
 
-  let html = `<h1>RSVP: ${user.groupId}</h1>
-    <table class="rsvp-table"><thead><tr><th>Guest</th>`;
+  let html = `
+    <div class="rsvp-container">
+      <h1>${getContent('rsvp', 'title')}: ${user.groupId}</h1>
+      <div class="rsvp-instructions">
+        <p>${getContent('rsvp', 'instructions')}</p>
+        ${members.length === 1 ? `<p>${getContent('rsvp', 'plusOneInstructions')}</p>` : ''}
+      </div>
+      <table class="rsvp-table">
+        <thead>
+          <tr>
+            <th>${getContent('rsvp', 'title')}</th>`;
   
   // Only show events that at least one member is invited to
   const invitedEvents = events.filter(ev => 
@@ -832,7 +947,7 @@ async function renderRSVP(user){
   );
   
   invitedEvents.forEach(ev=> html+=`<th>${ev.title}</th>`);
-  html += `<th>Allergies</th></tr></thead><tbody>`;
+  html += `<th>${getContent('rsvp', 'allergies')}</th></tr></thead><tbody>`;
 
   members.forEach(m=>{
     html += `<tr><td>${m.firstName} ${m.lastName}</td>`;
@@ -847,35 +962,97 @@ async function renderRSVP(user){
       }
     });
     // Add allergies input field
-    html += `<td data-label="Allergies"><input type="text" class="allergies-input" 
+    html += `<td data-label="${getContent('rsvp', 'allergies')}"><input type="text" class="allergies-input" 
               data-uid="${m.uid}" 
               value="${m.allergies || ''}" 
-              placeholder="Enter any allergies"></td>`;
+              placeholder="${getContent('rsvp', 'allergiesPlaceholder')}"></td>`;
     html += "</tr>";
   });
+
+  // Add +1 row if user is alone in their group
+  if (members.length === 1) {
+    html += `<tr class="plus-one-row">
+      <td>
+        <input type="text" id="plusOneFirstName" placeholder="${getContent('rsvp', 'firstNamePlaceholder')}" class="plus-one-name">
+        <input type="text" id="plusOneLastName" placeholder="${getContent('rsvp', 'lastNamePlaceholder')}" class="plus-one-name">
+      </td>`;
+    
+    invitedEvents.forEach(ev => {
+      html += `<td data-label="${ev.title}">
+        <input type="checkbox" class="plus-one-event" data-event="${ev.id}">
+      </td>`;
+    });
+    
+    html += `<td data-label="${getContent('rsvp', 'allergies')}">
+      <input type="text" id="plusOneAllergies" class="allergies-input" placeholder="${getContent('rsvp', 'allergiesPlaceholder')}">
+    </td></tr>`;
+  }
+
   html += `</tbody></table>
-    <button id="submitRSVP">${user.hasRSVPed ? 'Resubmit RSVP' : 'Submit RSVP'}</button>`;
+    <button id="submitRSVP">${user.hasRSVPed ? getContent('rsvp', 'resubmit') : getContent('rsvp', 'submit')}</button>
+  </div>`;
   app.innerHTML = html;
 
   document.getElementById('submitRSVP').onclick = async ()=>{
-    // Save RSVPs
-    document.querySelectorAll("input[type=checkbox]").forEach(async cb=>{
-      await setDoc(doc(db,"rsvps",`${cb.dataset.uid}_${cb.dataset.event}`),{
-        userId:cb.dataset.uid,
-        eventId:cb.dataset.event,
-        attending:cb.checked
+    try {
+      // Save RSVPs for existing members
+      const rsvpPromises = document.querySelectorAll("input[type=checkbox]:not(.plus-one-event)").forEach(async cb=>{
+        await setDoc(doc(db,"rsvps",`${cb.dataset.uid}_${cb.dataset.event}`),{
+          userId:cb.dataset.uid,
+          eventId:cb.dataset.event,
+          attending:cb.checked
+        });
       });
-    });
 
-    // Save allergies
-    document.querySelectorAll(".allergies-input").forEach(async input => {
-      await setDoc(doc(db,"users",input.dataset.uid),{
-        allergies: input.value.trim()
-      }, { merge: true });
-    });
+      // Save allergies for existing members
+      const allergyPromises = document.querySelectorAll(".allergies-input:not(#plusOneAllergies)").forEach(async input => {
+        await setDoc(doc(db,"users",input.dataset.uid),{
+          allergies: input.value.trim()
+        }, { merge: true });
+      });
 
-    await setDoc(doc(db,"users",user.uid),{ hasRSVPed:true },{ merge:true });
-    navigate("home");
+      // Handle +1 guest if present
+      if (members.length === 1) {
+        const plusOneFirstName = document.getElementById('plusOneFirstName').value.trim();
+        const plusOneLastName = document.getElementById('plusOneLastName').value.trim();
+        const plusOneAllergies = document.getElementById('plusOneAllergies').value.trim();
+        
+        if (plusOneFirstName && plusOneLastName) {
+          // Create new user document for +1
+          const plusOneRef = doc(collection(db, "users"));
+          await setDoc(plusOneRef, {
+            firstName: plusOneFirstName,
+            lastName: plusOneLastName,
+            groupId: user.groupId,
+            allergies: plusOneAllergies,
+            isPlusOne: true,
+            plusOneOf: user.uid,
+            invitedMainWedding: true // By default, +1 is invited to main wedding
+          });
+
+          // Save RSVPs for +1
+          const plusOneEvents = document.querySelectorAll('.plus-one-event:checked');
+          for (const event of plusOneEvents) {
+            await setDoc(doc(db, "rsvps", `${plusOneRef.id}_${event.dataset.event}`), {
+              userId: plusOneRef.id,
+              eventId: event.dataset.event,
+              attending: true
+            });
+          }
+        }
+      }
+
+      // Mark all group members as having RSVPed
+      const groupUpdatePromises = members.map(member => 
+        setDoc(doc(db, "users", member.uid), { hasRSVPed: true }, { merge: true })
+      );
+
+      await Promise.all([...rsvpPromises, ...allergyPromises, ...groupUpdatePromises]);
+      navigate("home");
+    } catch (error) {
+      console.error("Error submitting RSVP:", error);
+      alert("There was an error submitting your RSVP. Please try again.");
+    }
   };
 }
 
@@ -1024,6 +1201,89 @@ async function renderAdmin(user) {
 window.addEventListener("DOMContentLoaded", ()=>{
   currentLanguage = sessionStorage.getItem('weddingLanguage') || 'en';
   renderLanguageSelector();
+  
+  // Add menu button and mobile menu
+  const menuButton = document.createElement('button');
+  menuButton.className = 'menu-button';
+  menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+  document.body.appendChild(menuButton);
+
+  const mobileMenu = document.createElement('div');
+  mobileMenu.className = 'mobile-menu';
+  mobileMenu.innerHTML = `
+    <button class="close-button"><i class="fas fa-times"></i></button>
+    <div class="mobile-menu-content"></div>
+  `;
+  document.body.appendChild(mobileMenu);
+
+  // Add overlay
+  const menuOverlay = document.createElement('div');
+  menuOverlay.className = 'menu-overlay';
+  document.body.appendChild(menuOverlay);
+
+  // Scroll handling
+  let lastScroll = 0;
+  const navbar = document.getElementById('main-nav');
+  const menuBtn = document.querySelector('.menu-button');
+
+  window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    const navbarHeight = navbar.offsetHeight;
+    
+    // Show/hide navbar and menu button based on scroll position
+    if (currentScroll > navbarHeight) {
+      navbar.classList.add('hidden');
+      menuBtn.classList.add('visible');
+    } else {
+      navbar.classList.remove('hidden');
+      menuBtn.classList.remove('visible');
+    }
+    
+    lastScroll = currentScroll;
+  });
+
+  function closeMenu() {
+    mobileMenu.classList.remove('visible');
+    menuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  function openMenu() {
+    mobileMenu.classList.add('visible');
+    menuOverlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+    
+    // Copy navigation items to mobile menu
+    const menuContent = mobileMenu.querySelector('.mobile-menu-content');
+    menuContent.innerHTML = '';
+    document.querySelectorAll('#main-nav a').forEach(link => {
+      const newLink = link.cloneNode(true);
+      // Preserve the data-route attribute and active class
+      newLink.setAttribute('data-route', link.getAttribute('data-route'));
+      if (link.classList.contains('active')) {
+        newLink.classList.add('active');
+      }
+      newLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const route = newLink.getAttribute('data-route');
+        if (route) {
+          navigate(route);
+          closeMenu();
+        }
+      });
+      menuContent.appendChild(newLink);
+    });
+  }
+
+  // Menu button click handler
+  menuButton.addEventListener('click', openMenu);
+
+  // Close button click handler
+  mobileMenu.querySelector('.close-button').addEventListener('click', closeMenu);
+
+  // Close menu when clicking overlay
+  menuOverlay.addEventListener('click', closeMenu);
+
   if (sessionStorage.getItem("weddingUser")) navigate("home");
   else renderLogin();
 });
