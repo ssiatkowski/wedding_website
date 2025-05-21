@@ -34,8 +34,8 @@ const content = {
   home: {
     en: {
       welcome: "Welcome",
-      subtitle: "We're thrilled to have you join us on our special day",
-      timeUntil: "Time Until Celebration",
+      subtitle: "We hope you can join us on our special day, and will be thrilled to have you with us.",
+      timeUntil: "Celebration Countdown",
       days: "days",
       hours: "hours",
       minutes: "minutes",
@@ -43,9 +43,9 @@ const content = {
       month: "September"
     },
     pl: {
-      welcome: "Witamy",
-      subtitle: "Cieszymy się, że dołączysz do nas w ten wyjątkowy dzień",
-      timeUntil: "Czas do Uroczystości",
+      welcome: "Cześć",
+      subtitle: "Mamy nadzieję, że dołączysz do nas w ten wyjątkowy dzień i będziemy zachwyceni, jeżeli będziesz z nami.",
+      timeUntil: "Odliczanie do Uroczystości",
       days: "dni",
       hours: "godziny",
       minutes: "minuty",
@@ -54,8 +54,8 @@ const content = {
     },
     gu: {
       welcome: "સ્વાગત છે",
-      subtitle: "આપણા ખાસ દિવસે તમને જોડાવા માટે આનંદિત છીએ",
-      timeUntil: "ઉજવણી સુધીનો સમય",
+      subtitle: "અમે આશા રાખીએ છીએ કે તમે અમારા ખાસ દિવસે અમારી સાથે જોડાઓ, અને અમને ખૂબ જ આનંદ થશે કે તમે અમારી સાથે હોશો.",
+      timeUntil: "ઉજવણી સુધીનું ગણતરી",
       days: "દિવસો",
       hours: "કલાકો",
       minutes: "મિનિટ",
@@ -64,9 +64,18 @@ const content = {
     }
   },
   schedule: {
-    en: { title: "Schedule" },
-    pl: { title: "Harmonogram" },
-    gu: { title: "શેડ્યૂલ" }
+    en: { 
+      title: "Schedule",
+      attire: "Attire"
+    },
+    pl: { 
+      title: "Harmonogram",
+      attire: "Ubiór"
+    },
+    gu: { 
+      title: "શેડ્યૂલ",
+      attire: "પોશાક"
+    }
   },
   travel: {
     en: {
@@ -75,7 +84,17 @@ const content = {
       hotels: "Hotels",
       laxInfo: "We recommend flying into LAX. From there you can either rent a car or use Uber/Lyft.",
       bookNow: "Book Now",
-      groupCode: "Group Code"
+      groupCode: "Group Code",
+      otherHotels: "Other Hotel Options",
+      otherOptions: "Other Options",
+      otherHotelsDesc: "There are several other hotels available in the Agoura Hills and Thousand Oaks area. Here is a google search for best locations.",
+      airbnbTitle: "AirBnB",
+      airbnbDesc: "There are many AirBnB options available in Agoura Hills and the surrounding areas. We recommend booking early as availability can be limited during peak seasons.",
+      bookingTitle: "Booking.com",
+      bookingDesc: "Browse additional hotel options in the area through Booking.com.",
+      searchHotels: "Search Hotels",
+      searchAirbnb: "Search AirBnB",
+      searchBooking: "Search Booking.com"
     },
     pl: {
       title: "Podróż",
@@ -83,7 +102,17 @@ const content = {
       hotels: "Hotele",
       laxInfo: "Zalecamy przylot na LAX. Stamtąd możesz wynająć samochód lub skorzystać z Uber/Lyft.",
       bookNow: "Zarezerwuj teraz",
-      groupCode: "Kod grupy"
+      groupCode: "Kod grupy",
+      otherHotels: "Inne Opcje Hotelowe",
+      otherOptions: "Inne Opcje",
+      otherHotelsDesc: "W okolicach Agoura Hills i Thousand Oaks dostępnych jest kilka innych hoteli. Oto wyszukiwarka Google z najlepszymi lokalizacjami.",
+      airbnbTitle: "AirBnB",
+      airbnbDesc: "W Agoura Hills i okolicach dostępnych jest wiele opcji AirBnB. Zalecamy wczesną rezerwację, ponieważ dostępność może być ograniczona w sezonie.",
+      bookingTitle: "Booking.com",
+      bookingDesc: "Przeglądaj dodatkowe opcje hoteli w okolicy przez Booking.com.",
+      searchHotels: "Szukaj Hotelów",
+      searchAirbnb: "Szukaj AirBnB",
+      searchBooking: "Szukaj na Booking.com"
     },
     gu: {
       title: "મુસાફરી",
@@ -91,7 +120,17 @@ const content = {
       hotels: "હોટેલ્સ",
       laxInfo: "અમે LAX માં ફ્લાઇટ કરવાની ભલામણ કરીએ છીએ. ત્યાંથી તમે કાર ભાડે લઈ શકો છો અથવા Uber/Lyft નો ઉપયોગ કરી શકો છો.",
       bookNow: "હવે બુક કરો",
-      groupCode: "ગ્રુપ કોડ"
+      groupCode: "ગ્રુપ કોડ",
+      otherHotels: "અન્ય હોટેલ વિકલ્પો",
+      otherOptions: "અન્ય વિકલ્પો",
+      otherHotelsDesc: "અગોરા હિલ્સ અને થાઉઝન્ડ ઓક્સ વિસ્તારમાં અન્ય કેટલાક હોટેલો ઉપલબ્ધ છે. અહીં શ્રેષ્ઠ સ્થાનો માટે Google શોધ છે.",
+      airbnbTitle: "AirBnB",
+      airbnbDesc: "અગોરા હિલ્સ અને આસપાસના વિસ્તારોમાં ઘણા AirBnB વિકલ્પો ઉપલબ્ધ છે. અમે શિખર સીઝનમાં ઉપલબ્ધતા મર્યાદિત હોઈ શકે છે, તેથી વહેલી બુકિંગની ભલામણ કરીએ છીએ.",
+      bookingTitle: "Booking.com",
+      bookingDesc: "Booking.com દ્વારા વિસ્તારમાં વધારાના હોટેલ વિકલ્પો બ્રાઉઝ કરો.",
+      searchHotels: "હોટેલો શોધો",
+      searchAirbnb: "AirBnB શોધો",
+      searchBooking: "Booking.com પર શોધો"
     }
   },
   details: {
@@ -153,7 +192,7 @@ const content = {
       plusOneTitle: "Add a Guest",
       plusOneDescription: "You can add one guest to your group. Please provide their details below.",
       instructions: "Please indicate which events you will be able to attend by checking the corresponding boxes. If you have any dietary restrictions or allergies, please note them in the allergies section. Once you have completed your selections, click the submit button at the bottom of the page.",
-      plusOneInstructions: "If you would like to bring a guest, please provide their information in the section below. They will be added to your group and can attend the same events as you."
+      plusOneInstructions: "If you would like to bring a guest, please provide their information in the section below."
     },
     pl: {
       title: "RSVP",
@@ -168,7 +207,7 @@ const content = {
       plusOneTitle: "Dodaj gościa",
       plusOneDescription: "Możesz dodać jednego gościa do swojej grupy. Podaj jego dane poniżej.",
       instructions: "Prosimy o zaznaczenie wydarzeń, w których będziecie mogli uczestniczyć, zaznaczając odpowiednie pola. Jeśli macie jakieś ograniczenia dietetyczne lub alergie, prosimy o ich zaznaczenie w sekcji alergii. Po dokonaniu wyborów, kliknij przycisk wyślij na dole strony.",
-      plusOneInstructions: "Jeśli chcielibyście przyprowadzić gościa, prosimy o podanie jego danych w sekcji poniżej. Zostanie on dodany do waszej grupy i będzie mógł uczestniczyć w tych samych wydarzeniach co wy."
+      plusOneInstructions: "Jeśli chcielibyście przyprowadzić osobę towarzyszącą, prosimy o podanie jej danych w sekcji poniżej."
     },
     gu: {
       title: "RSVP",
@@ -183,7 +222,7 @@ const content = {
       plusOneTitle: "મહેમાન ઉમેરો",
       plusOneDescription: "તમે તમારા જૂથમાં એક મહેમાન ઉમેરી શકો છો. કૃપા કરીને તેમની વિગતો નીચે આપો.",
       instructions: "કૃપા કરીને તમે જે કાર્યક્રમોમાં ભાગ લઈ શકશો તેના માટે સંબંધિત બોક્સ ચેક કરો. જો તમને કોઈ ખોરાક પ્રતિબંધો અથવા એલર્જી હોય, તો કૃપા કરીને એલર્જી વિભાગમાં તેની નોંધ કરો. તમારી પસંદગી પૂર્ણ થયા પછી, પૃષ્ઠના તળિયે સબમિટ બટન પર ક્લિક કરો.",
-      plusOneInstructions: "જો તમે કોઈ મહેમાનને લાવવા માંગતા હો, તો કૃપા કરીને નીચેના વિભાગમાં તેમની માહિતી આપો. તેમને તમારા જૂથમાં ઉમેરવામાં આવશે અને તમે જે કાર્યક્રમોમાં ભાગ લશો તેમાં ભાગ લઈ શકશે."
+      plusOneInstructions: "જો તમે કોઈ મહેમાનને લાવવા માંગતા હો, તો કૃપા કરીને નીચેના વિભાગમાં તેમની માહિતી આપો."
     }
   },
   admin: {
@@ -235,6 +274,51 @@ const content = {
     gu: {
       days: ['રવિવાર', 'સોમવાર', 'મંગળવાર', 'બુધવાર', 'ગુરુવાર', 'શુક્રવાર', 'શનિવાર'],
       months: ['જાન્યુઆરી', 'ફેબ્રુઆરી', 'માર્ચ', 'એપ્રિલ', 'મે', 'જૂન', 'જુલાઈ', 'ઓગસ્ટ', 'સપ્ટેમ્બર', 'ઓક્ટોબર', 'નવેમ્બર', 'ડિસેમ્બર']
+    }
+  },
+  attire: {
+    en: {
+      church: "Church Appropriate",
+      indian: "Indian or Festive Semiformal",
+      formal: "Formal",
+      casual: "Casual"
+    },
+    pl: {
+      church: "Odpowiedni do Kościoła",
+      indian: "Indyjski lub Świąteczny Półformalny",
+      formal: "Formalny",
+      casual: "Swobodny"
+    },
+    gu: {
+      church: "ચર્ચ માટે યોગ્ય",
+      indian: "ભારતીય અથવા ઉત્સવ સેમિફોર્મલ",
+      formal: "ફોર્મલ",
+      casual: "કેઝ્યુઅલ"
+    }
+  },
+  parking: {
+    en: {
+      valet: "Free Valet Available"
+    },
+    pl: {
+      valet: "Darmowy Parking z Obsługą"
+    },
+    gu: {
+      valet: "મફત વેલેટ ઉપલબ્ધ છે"
+    }
+  },
+  transport: {
+    en: {
+      basic: "Uber/Lyft are available",
+      shuttle: "Uber/Lyft are available. Starting at 9pm, we have also arranged for a shuttle back to our blocked hotels."
+    },
+    pl: {
+      basic: "Dostępne Uber/Lyft",
+      shuttle: "Dostępne Uber/Lyft. Od godziny 21:00 zorganizowaliśmy również transport powrotny do naszych zarezerwowanych hoteli."
+    },
+    gu: {
+      basic: "Uber/Lyft ઉપલબ્ધ છે",
+      shuttle: "Uber/Lyft ઉપલબ્ધ છે. રાત્રે 9 વાગ્યા થી, અમે અમારા બ્લોક કરેલા હોટેલોમાં પાછા જવા માટે શટલની વ્યવસ્થા પણ કરી છે."
     }
   }
 };
@@ -297,7 +381,7 @@ function renderLogin(){
       <input id="first" placeholder="${getContent('login', 'firstName')}" required />
       <input id="last"  placeholder="${getContent('login', 'lastName')}"  required />
       <input id="pass"  type="password" placeholder="${getContent('login', 'password')}" required />
-      <button>${getContent('login', 'enter')}</button>
+      <button class="submit-button">${getContent('login', 'enter')}</button>
       <div id="loginError" class="error"></div>
     </form>
     <div id="suggestions"></div>
@@ -382,7 +466,13 @@ function finishLogin(uid, isAdmin = false){
 // --- 4. Router & Nav ---
 const routes = {
   home: { 
-    title: () => getContent('home', 'welcome'),
+    title: () => {
+      switch(currentLanguage) {
+        case 'pl': return 'Strona Główna';
+        case 'gu': return 'હોમ';
+        default: return 'Home';
+      }
+    },
     render: renderHome 
   },
   schedule: { 
@@ -470,19 +560,29 @@ async function renderHome(user){
     <div class="welcome-section">
       <div class="welcome-content">
         <div class="welcome-text">
-          <h1>${getContent('home', 'welcome')}, ${user.preferredName ? user.preferredName : user.firstName}!</h1>
-          <p class="subtitle">${getContent('home', 'subtitle')}</p>
-          <div class="date-location">
-            <p class="date">${getContent('home', 'month')} 13, 2025</p>
-            <p class="location">Los Angeles, CA</p>
+          <h1 class="animated-title">${getContent('home', 'welcome')} ${user.preferredName ? user.preferredName : user.firstName}!</h1>
+          <p class="subtitle animated-subtitle">${getContent('home', 'subtitle')}</p>
+          <div class="date-location animated-card">
+            <div class="date-badge">
+              <span class="month">${getContent('home', 'month')}</span>
+              <span class="day">13</span>
+              <span class="year">2025</span>
+            </div>
+            <p class="location"><i class="fas fa-map-marker-alt"></i> Los Angeles, CA</p>
           </div>
-          <div class="countdown">
-            <p>${getContent('home', 'timeUntil')}</p>
-            <div id="countdown-timer"></div>
+          <div class="countdown animated-card">
+            <p class="countdown-title">${getContent('home', 'timeUntil')}</p>
+            <div id="countdown-timer" class="countdown-grid"></div>
           </div>
         </div>
-        <div class="welcome-image">
-          <img src="images/photos/photo35.jpg" alt="Wedding Photo" class="featured-photo">
+        <div class="welcome-image animated-image">
+          <img src="images/photos/photo8.jpg" alt="Wedding Photo" class="featured-photo">
+          <div class="image-overlay">
+            <div class="overlay-content">
+              <span class="heart-icon">❤️</span>
+              <span class="overlay-text">Sebastian & Alomi</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -501,18 +601,22 @@ async function renderHome(user){
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
         document.getElementById('countdown-timer').innerHTML = `
-        <div class="countdown-item">
-            <span class="countdown-number">${days}</span>
-            <span class="countdown-label">${getContent('home', 'days')}</span>, 
-            <span class="countdown-number">${hours}</span>
-            <span class="countdown-label">${getContent('home', 'hours')}</span>, 
-        </div>
-        <div class="countdown-item">
-            <span class="countdown-number">${minutes}</span>
-            <span class="countdown-label">${getContent('home', 'minutes')}</span>, 
-            <span class="countdown-number">${seconds}</span>
-            <span class="countdown-label">${getContent('home', 'seconds')}</span>
-        </div>
+          <div class="countdown-item">
+            <div class="countdown-number">${days}</div>
+            <div class="countdown-label">${getContent('home', 'days')}</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-number">${hours}</div>
+            <div class="countdown-label">${getContent('home', 'hours')}</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-number">${minutes}</div>
+            <div class="countdown-label">${getContent('home', 'minutes')}</div>
+          </div>
+          <div class="countdown-item">
+            <div class="countdown-number">${seconds}</div>
+            <div class="countdown-label">${getContent('home', 'seconds')}</div>
+          </div>
         `;
     }
   }
@@ -563,6 +667,21 @@ async function renderSchedule(user){
       const address = ev.location.split('<br>').map(part => part.trim()).join(', ');
       const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
+      // Get translated attire, parking, and transport text
+      let attireText = ev.attire;
+      if (ev.attire === "Church Appropriate") attireText = getContent('attire', 'church');
+      else if (ev.attire === "Indian or Festive Semiformal") attireText = getContent('attire', 'indian');
+      else if (ev.attire === "Formal") attireText = getContent('attire', 'formal');
+      else if (ev.attire === "Casual") attireText = getContent('attire', 'casual');
+
+      let parkingText = ev.parking;
+      if (ev.parking === "Free Valet Available") parkingText = getContent('parking', 'valet');
+
+      let transportText = ev.transport;
+      if (ev.transport === "Uber/Lyft are available") transportText = getContent('transport', 'basic');
+      else if (ev.transport === "Uber/Lyft are available. Starting at 9pm, we have also arranged for a shuttle back to our blocked hotels.") 
+        transportText = getContent('transport', 'shuttle');
+
       html += `
         <div class="event-card">
           <div class="event-header">
@@ -594,7 +713,7 @@ async function renderSchedule(user){
               <div class="event-attire">
                 <i class="fas fa-tshirt"></i>
                 <div class="attire-details">
-                  <strong>Attire:</strong> ${ev.attire}
+                  <strong>${getContent('schedule', 'attire')}:</strong> ${attireText}
                 </div>
               </div>
             ` : ''}
@@ -603,7 +722,7 @@ async function renderSchedule(user){
               <div class="event-parking">
                 <i class="fas fa-parking"></i>
                 <div class="parking-details">
-                  <strong>Parking:</strong> ${ev.parking}
+                  <strong>Parking:</strong> ${parkingText}
                 </div>
               </div>
             ` : ''}
@@ -612,7 +731,7 @@ async function renderSchedule(user){
               <div class="event-transport">
                 <i class="fas fa-car"></i>
                 <div class="transport-details">
-                  <strong>Transport:</strong> ${ev.transport}
+                  <strong>Transport:</strong> ${transportText}
                 </div>
               </div>
             ` : ''}
@@ -689,11 +808,15 @@ async function renderTravel(){
 
           <div class="hotel-card">
             <div class="hotel-icon">
-              <i class="fas fa-info-circle"></i>
+              <i class="fas fa-search-location"></i>
             </div>
             <div class="hotel-details">
-              <h3>Other Hotel Options</h3>
-              <p>There are several other hotels available in the Agoura Hills and Thousand Oaks area. We recommend checking booking sites for the best rates and availability.</p>
+              <h3>${getContent('travel', 'otherHotels')}</h3>
+              <p>${getContent('travel', 'otherHotelsDesc')}</p>
+              <a href="https://www.google.com/travel/search?q=hotels%20agoura%20hills&g2lb=4965990%2C4969803%2C72277293%2C72302247%2C72317059%2C72414906%2C72471280%2C72472051%2C72481459%2C72485658%2C72560029%2C72573224%2C72616120%2C72647020%2C72648289%2C72686036%2C72760082%2C72803964%2C72832976%2C72882230%2C72885032%2C72946003%2C72948010%2C72958594%2C72958624%2C72959983%2C72969407%2C72969663&hl=en-US&gl=us&ssta=1&ts=CAESCgoCCAMKAggDEAAafwphEjUyJTB4ODBlODIxMWUyM2FhMWM5NToweGFjMGVmNmFlMmRkZmZkZDY6DEFnb3VyYSBIaWxscxooChIJAJGQBJMHQUARpC69N1O4XcASEgnZBVkKhh1BQBGkLr1ncKddwBIaEhQKBwjpDxAJGAwSBwjpDxAJGA4YAjICCAEqBwoFOgNVU0Q&qs=CAE4BlpPCAEyS6oBSBABKgoiBmhvdGVscygAMh8QASIbkVoVClkeODeSTmJsydXSgEbugwLIWAf8D7ziMhcQAiITaG90ZWxzIGFnb3VyYSBoaWxscw&ap=KigKEgkAkZAEkwdBQBGkLr03U7hdwBISCdkFWQqGHUFAEaQuvWdwp13AMAJoAQ&ictx=111&ved=0CAAQ5JsGahcKEwiIgPr_p7ONAxUAAAAAHQAAAAAQBg" 
+                 target="_blank" class="hotel-link">
+                ${getContent('travel', 'searchHotels')} <i class="fas fa-external-link-alt"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -702,7 +825,7 @@ async function renderTravel(){
       <div class="travel-section">
         <div class="section-header">
           <i class="fas fa-home"></i>
-          <h2>AirBnB Options</h2>
+          <h2>${getContent('travel', 'otherOptions')}</h2>
         </div>
         <div class="section-content">
           <div class="hotel-card">
@@ -710,8 +833,26 @@ async function renderTravel(){
               <i class="fas fa-home"></i>
             </div>
             <div class="hotel-details">
-              <h3>AirBnB Accommodations</h3>
-              <p>There are many AirBnB options available in Agoura Hills and the surrounding areas. We recommend booking early as availability can be limited during peak seasons.</p>
+              <h3>${getContent('travel', 'airbnbTitle')}</h3>
+              <p>${getContent('travel', 'airbnbDesc')}</p>
+              <a href="https://www.airbnb.com/s/Agoura-Hills--CA/homes?refinement_paths%5B%5D=%2Fhomes&place_id=ChIJlRyqIx4h6IAR1v3fLa72Dqw&checkin=2025-09-12&checkout=2025-09-14&adults=2&query=Agoura%20Hills%2C%20CA&flexible_trip_lengths%5B%5D=one_week&monthly_start_date=2025-06-01&monthly_length=3&monthly_end_date=2025-09-01&search_mode=regular_search&price_filter_input_type=2&price_filter_num_nights=2&channel=EXPLORE&source=structured_search_input_header&search_type=user_map_move&ne_lat=34.25319394821856&ne_lng=-118.604458777741&sw_lat=34.040701434194176&sw_lng=-118.88559867452989&zoom=12.622464229316126&zoom_level=12.622464229316126&search_by_map=true" 
+                 target="_blank" class="hotel-link">
+                ${getContent('travel', 'searchAirbnb')} <i class="fas fa-external-link-alt"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="hotel-card">
+            <div class="hotel-icon">
+              <i class="fas fa-hotel"></i>
+            </div>
+            <div class="hotel-details">
+              <h3>${getContent('travel', 'bookingTitle')}</h3>
+              <p>${getContent('travel', 'bookingDesc')}</p>
+              <a href="https://www.booking.com/searchresults.html?ss=Agoura+Hills&ssne=Agoura+Hills&ssne_untouched=Agoura+Hills&efdco=1&label=gog235jc-1DCAMo7AFCDGFnb3VyYS1oaWxsc0gzWANoiQKIAQGYATG4ARfIAQzYAQPoAQH4AQKIAgGoAgO4AqK_tMEGwAIB0gIkMTg2M2VlOWQtMTY2Ny00MjY5LThmYzktMTMyNGM5M2JhZTQ52AIE4AIB&aid=356980&lang=en-us&sb=1&src_elem=sb&src=city&dest_id=20011229&dest_type=city&checkin=2025-09-12&checkout=2025-09-14&group_adults=2&no_rooms=1&group_children=0&sb_travel_purpose=leisure&sb_lp=1#map_opened" 
+                 target="_blank" class="hotel-link">
+                ${getContent('travel', 'searchBooking')} <i class="fas fa-external-link-alt"></i>
+              </a>
             </div>
           </div>
         </div>
@@ -775,15 +916,13 @@ async function renderPhotos() {
         'images/photos/photo31.jpg',
         'images/photos/photo32.jpg',
         'images/photos/photo33.jpg',
-        'images/photos/photo34.jpg',
-        'images/photos/photo35.jpg',
-        'images/photos/photo36.jpg',
       ];
 
       // Create photo elements
-      photos.forEach(photo => {
+      photos.forEach((photo, idx) => {
         const item = document.createElement('div');
         item.className = 'photo-item';
+        item.style.animationDelay = (0.1 * idx) + 's'; // Stagger entrance
         item.innerHTML = `
           <div class="photo-wrapper">
             <img src="${photo}" alt="Wedding Photo" loading="lazy">
@@ -795,30 +934,44 @@ async function renderPhotos() {
           showLightbox(photo);
         });
 
+        // inside photos.forEach((photo, idx) => { … })
+        item.style.opacity      = 0;            // start invisible
+        item.style.marginBottom = '20px';       // vertical spacing between rows
+
+        // then append it…
+        photoGallery.appendChild(item);
+
+        // and kick off a Web-Animations API fly-in+spin:
+        item.animate([
+          { transform: 'translateY(50px) rotate(-720deg)', opacity: 0 },
+          { transform: 'translateY(-10px) rotate(20deg)', opacity: 1, offset: 0.6 },
+          { transform: 'translateY(0)    rotate(0deg)', opacity: 1 }
+        ], {
+          duration: 800,
+          easing:   'cubic-bezier(.38,.61,.6,1.02)',
+          delay:    idx * 100,    // stagger by 100ms per photo
+          fill:     'forwards'
+        });
+
         photoGallery.appendChild(item);
       });
 
-      // Initialize Masonry
+      // Initialize Masonry only on desktop
       let masonry = null;
       function initMasonry() {
         if (masonry) {
           masonry.destroy();
+          masonry = null;
         }
-        
-        // Wait for images to load
+      
         imagesLoaded('#photoGallery', function() {
-          // Initialize Masonry
           masonry = new Masonry('#photoGallery', {
             itemSelector: '.photo-item',
-            columnWidth: '.photo-item',
             percentPosition: true,
             transitionDuration: '0.3s',
             gutter: 10,
-            fitWidth: true,
-            initLayout: true
           });
-
-          // Force layout update after a short delay to ensure images are loaded
+      
           setTimeout(() => {
             if (masonry) {
               masonry.layout();
@@ -826,6 +979,7 @@ async function renderPhotos() {
           }, 100);
         });
       }
+      
 
       // Initialize on load
       initMasonry();
@@ -905,7 +1059,140 @@ async function renderDetails()  {
     </div>
   `;
 }
-async function renderRegistry()   { app.innerHTML = `<h1>Registry</h1><p>…Not created yet…</p>`; }
+
+async function renderRegistry() {
+  const intros = {
+    en: `Your presence at our wedding is the greatest gift in the world. 
+         Please don’t feel obligated to bring anything; but if you wish, below are some registry and cash-gift options.`,
+    pl: `Twoja obecność na naszym weselu to największy prezent. 
+         Prosimy, nie czuj się zobowiązany do przynoszenia czegokolwiek; jeśli jednak chcesz, poniżej znajdziesz opcje prezentów i kasy.`,
+    gu: `અમારા લગ્નમાં તમારી હાજરી સર્વશ્રેષ્ઠ ભેટ છે. 
+         કૃપા કરીને કંઈ લાવવાની તકેદારી महसૂસ نہ કરો; પરંતુ જો તમે ઇચ્છો તો નીચે રજિસ્ટ્રી અને કેશ-ગિફ્ટ વિકલ્પો છે.`
+  };
+
+  app.innerHTML = `
+    <div class="registry-container">
+      <div class="registry-intro">${intros[currentLanguage]}</div>
+
+      <section class="registry-section">
+        <h2><i class="fas fa-gift"></i> Amazon Registry</h2>
+        <p>Shop our curated Amazon list for items we’ll enjoy for years to come.</p>
+        <a href="https://www.amazon.com/registry/your-registry-link" target="_blank" class="hotel-link">
+          View on Amazon <i class="fas fa-external-link-alt"></i>
+        </a>
+      </section>
+
+      <section class="registry-section">
+        <h2><i class="fas fa-money-bill-wave"></i> Cash Gift</h2>
+        <p>Choose how you’d like to split up your gift contribution (enter total):</p>
+        <div class="slider-wrapper">
+          <div class="slider-label">Total amount</div>
+          <div class="slider-controls">
+            <span>$</span>
+            <input type="number" id="totalAmount" value="0" min="0" step="1" class="manual-input">
+          </div>
+        </div>
+        <div id="slidersContainer"></div>
+        <button id="submitRegistry" class="hotel-link">Confirm Allocation</button>
+      </section>
+    </div>
+  `;
+
+  const categories = [
+    { key: 'honeymoon',  label: 'Honeymoon Fund',    desc: 'Planning our dream trip to Switzerland.' },
+    { key: 'puppy',      label: 'Puppy Fund',         desc: 'Pampering our dog Rex (and future puppy!).' },
+    { key: 'baby',       label: 'Future Baby Fund',   desc: 'Saving for little ones down the road.' },
+    { key: 'house',      label: 'Household Fund',     desc: 'Buying home essentials—and sharing the pics!' },
+    { key: 'entertain',  label: 'Entertainment Fund', desc: 'Fun experiences—photos guaranteed!' }
+  ];
+
+  const totalInput = document.getElementById('totalAmount');
+  const slidersDiv  = document.getElementById('slidersContainer');
+
+  // build each slider + manual box
+  categories.forEach(cat => {
+    const wr = document.createElement('div');
+    wr.className = 'slider-wrapper';
+    wr.innerHTML = `
+      <div class="slider-label">${cat.label}</div>
+      <div class="slider-controls">
+        <input type="range" id="${cat.key}Slider" min="0" max="0" value="0">
+        <span>$</span>
+        <input type="number" id="${cat.key}Manual" class="manual-input" min="0" max="0" step="1" value="0" disabled>
+      </div>
+      <div class="slider-description">${cat.desc}</div>
+    `;
+    slidersDiv.appendChild(wr);
+  });
+
+  let busy = false;
+  function getAll() {
+    return categories.map(c => ({
+      key: c.key,
+      slider: document.getElementById(c.key + 'Slider'),
+      manual: document.getElementById(c.key + 'Manual')
+    }));
+  }
+
+  function redistribute(changed) {
+    if (busy) return;
+    busy = true;
+    const total = Math.floor(+totalInput.value) || 0;
+    let items = getAll();
+    let sum = items.reduce((s, o) => s + +o.slider.value, 0);
+    let over = sum - total;
+    if (over > 0) {
+      let others = items.filter(o => o.key !== changed);
+      let pool = others.reduce((s, o) => s + +o.slider.value, 0);
+      others.forEach(o => {
+        const cur = +o.slider.value;
+        const cut = pool > 0 ? Math.round(over * (cur / pool)) : Math.ceil(over / others.length);
+        const next = Math.max(0, cur - cut);
+        o.slider.value = next;
+        o.manual.value = next;
+      });
+    }
+    busy = false;
+  }
+
+  // wire events
+  getAll().forEach(({ key, slider, manual }) => {
+    slider.addEventListener('input', () => {
+      manual.value = Math.floor(slider.value);
+      redistribute(key);
+    });
+    manual.addEventListener('input', () => {
+      const v = Math.min(Math.max(0, Math.floor(manual.value)), +totalInput.value);
+      slider.value = v;
+      redistribute(key);
+    });
+  });
+
+  // reconfigure when total changes
+  totalInput.addEventListener('input', () => {
+    const tot = Math.floor(+totalInput.value) || 0;
+    getAll().forEach(({ slider, manual }) => {
+      slider.max = tot;
+      manual.max = tot;
+      slider.disabled = tot === 0;
+      manual.disabled = tot === 0;
+      if (tot === 0) {
+        slider.value = 0;
+        manual.value = 0;
+      }
+    });
+  });
+
+  // submit
+  document.getElementById('submitRegistry').onclick = () => {
+    const alloc = {};
+    getAll().forEach(({ key, slider }) => alloc[key] = Math.floor(+slider.value));
+    alert(`Thanks for your gift! You allocated:\n${JSON.stringify(alloc, null,2)}`);
+  };
+}
+
+
+
 
 async function renderRSVP(user){
   const snap = await getDocs(query(collection(db,"users"),
@@ -916,7 +1203,7 @@ async function renderRSVP(user){
   const events = [
     { id: "Church", title: "Church Ceremony" },
     { id: "WelcomeParty", title: "Welcome Party" },
-    { id: "MainWedding", title: "Main Wedding" },
+    { id: "MainWedding", title: "Wedding" },
     { id: "SundayBrunchEarly", title: "Sunday Brunch" },
     { id: "SundayBrunchLate", title: "Sunday Brunch" }
   ];
