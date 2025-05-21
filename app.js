@@ -381,7 +381,7 @@ function renderLogin(){
       <input id="first" placeholder="${getContent('login', 'firstName')}" required />
       <input id="last"  placeholder="${getContent('login', 'lastName')}"  required />
       <input id="pass"  type="password" placeholder="${getContent('login', 'password')}" required />
-      <button class="submit-button">${getContent('login', 'enter')}</button>
+      <button class="login-button">${getContent('login', 'enter')}</button>
       <div id="loginError" class="error"></div>
     </form>
     <div id="suggestions"></div>
@@ -1063,12 +1063,28 @@ async function renderDetails()  {
 async function renderRegistry() {
   const intros = {
     en: `Your presence at our wedding is the greatest gift in the world. 
-         Please don’t feel obligated to bring anything; but if you wish, below are some registry and cash-gift options.`,
+         Please don't feel obligated to bring anything; but if you wish, below are some registry and cash-gift options.`,
     pl: `Twoja obecność na naszym weselu to największy prezent. 
          Prosimy, nie czuj się zobowiązany do przynoszenia czegokolwiek; jeśli jednak chcesz, poniżej znajdziesz opcje prezentów i kasy.`,
     gu: `અમારા લગ્નમાં તમારી હાજરી સર્વશ્રેષ્ઠ ભેટ છે. 
-         કૃપા કરીને કંઈ લાવવાની તકેદારી महसૂસ نہ કરો; પરંતુ જો તમે ઇચ્છો તો નીચે રજિસ્ટ્રી અને કેશ-ગિફ્ટ વિકલ્પો છે.`
+         કૃપા કરીને કંઈ લાવવાની તકેદારી महसूસ نہ કરો; પરંતુ જો તમે ઇચ્છો તો નીચે રજિસ્ટ્રી અને કેશ-ગિફ્ટ વિકલ્પો છે.`
   };
+
+  // Get current user
+  const uid = sessionStorage.getItem("weddingUser");
+  if (!uid) {
+    throw new Error("User not logged in");
+  }
+
+  // First verify the user exists
+  const userDoc = await getDoc(doc(db, "users", uid));
+  if (!userDoc.exists()) {
+    throw new Error("User not found");
+  }
+
+  // Then fetch existing registry data
+  const registryDoc = await getDoc(doc(db, "registry", uid));
+  const existingData = registryDoc.exists() ? registryDoc.data() : null;
 
   app.innerHTML = `
     <div class="registry-container">
@@ -1076,7 +1092,7 @@ async function renderRegistry() {
 
       <section class="registry-section">
         <h2><i class="fas fa-gift"></i> Amazon Registry</h2>
-        <p>Shop our curated Amazon list for items we’ll enjoy for years to come.</p>
+        <p>Shop our curated Amazon list for items we'll enjoy for years to come.</p>
         <a href="https://www.amazon.com/registry/your-registry-link" target="_blank" class="hotel-link">
           View on Amazon <i class="fas fa-external-link-alt"></i>
         </a>
@@ -1084,16 +1100,17 @@ async function renderRegistry() {
 
       <section class="registry-section">
         <h2><i class="fas fa-money-bill-wave"></i> Cash Gift</h2>
-        <p>Choose how you’d like to split up your gift contribution (enter total):</p>
+        <p>Choose how you'd like to split up your gift contribution (enter total):</p>
         <div class="slider-wrapper">
           <div class="slider-label">Total amount</div>
           <div class="slider-controls">
             <span>$</span>
-            <input type="number" id="totalAmount" value="0" min="0" step="1" class="manual-input">
+            <input type="number" id="totalAmount" value="${existingData?.totalAmount || 0}" min="0" step="1" class="manual-input">
           </div>
         </div>
         <div id="slidersContainer"></div>
-        <button id="submitRegistry" class="hotel-link">Confirm Allocation</button>
+        <button id="submitRegistry" class="hotel-link" ${!existingData?.totalAmount ? 'disabled' : ''}>${existingData ? 'Update Allocation' : 'Confirm Allocation'}</button>
+        <div id="registryStatus" class="registry-status"></div>
       </section>
     </div>
   `;
@@ -1107,18 +1124,21 @@ async function renderRegistry() {
   ];
 
   const totalInput = document.getElementById('totalAmount');
-  const slidersDiv  = document.getElementById('slidersContainer');
+  const slidersDiv = document.getElementById('slidersContainer');
+  const submitButton = document.getElementById('submitRegistry');
+  const statusDiv = document.getElementById('registryStatus');
 
   // build each slider + manual box
   categories.forEach(cat => {
+    const existingValue = existingData?.allocations?.[cat.key] || 0;
     const wr = document.createElement('div');
     wr.className = 'slider-wrapper';
     wr.innerHTML = `
       <div class="slider-label">${cat.label}</div>
       <div class="slider-controls">
-        <input type="range" id="${cat.key}Slider" min="0" max="0" value="0">
+        <input type="range" id="${cat.key}Slider" min="0" max="${existingData?.totalAmount || 0}" value="${existingValue}">
         <span>$</span>
-        <input type="number" id="${cat.key}Manual" class="manual-input" min="0" max="0" step="1" value="0" disabled>
+        <input type="number" id="${cat.key}Manual" class="manual-input" min="0" max="${existingData?.totalAmount || 0}" step="1" value="${existingValue}" ${!existingData?.totalAmount ? 'disabled' : ''}>
       </div>
       <div class="slider-description">${cat.desc}</div>
     `;
@@ -1163,6 +1183,7 @@ async function renderRegistry() {
     });
     manual.addEventListener('input', () => {
       const v = Math.min(Math.max(0, Math.floor(manual.value)), +totalInput.value);
+      manual.value = v;
       slider.value = v;
       redistribute(key);
     });
@@ -1181,18 +1202,65 @@ async function renderRegistry() {
         manual.value = 0;
       }
     });
+    // Enable/disable submit button based on total
+    submitButton.disabled = tot === 0;
   });
 
   // submit
-  document.getElementById('submitRegistry').onclick = () => {
-    const alloc = {};
-    getAll().forEach(({ key, slider }) => alloc[key] = Math.floor(+slider.value));
-    alert(`Thanks for your gift! You allocated:\n${JSON.stringify(alloc, null,2)}`);
+  submitButton.onclick = async () => {
+    try {
+      // Get current user
+      const uid = sessionStorage.getItem("weddingUser");
+      if (!uid) {
+        throw new Error("User not logged in");
+      }
+
+      // Verify user exists before saving
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (!userDoc.exists()) {
+        throw new Error("User not found");
+      }
+
+      // Get allocations
+      const alloc = {};
+      getAll().forEach(({ key, slider }) => {
+        const amount = Math.floor(+slider.value);
+        if (amount > 0) {
+          alloc[key] = amount;
+        }
+      });
+
+      // Show loading state
+      submitButton.disabled = true;
+      statusDiv.innerHTML = '<div class="loading">Saving your contribution...</div>';
+
+      // Save to Firebase
+      await setDoc(doc(db, "registry", uid), {
+        userId: uid,
+        allocations: alloc,
+        totalAmount: Math.floor(+totalInput.value),
+        timestamp: new Date()
+      });
+
+      // Show success message
+      statusDiv.innerHTML = '<div class="success">Thank you for your contribution!</div>';
+      
+      // Update button text
+      submitButton.textContent = 'Update Allocation';
+      
+      // Reset form after 2 seconds
+      setTimeout(() => {
+        statusDiv.innerHTML = '';
+        submitButton.disabled = false;
+      }, 2000);
+
+    } catch (error) {
+      console.error("Error saving registry contribution:", error);
+      statusDiv.innerHTML = '<div class="error">Error saving contribution. Please try again.</div>';
+      submitButton.disabled = false;
+    }
   };
 }
-
-
-
 
 async function renderRSVP(user){
   const snap = await getDocs(query(collection(db,"users"),
