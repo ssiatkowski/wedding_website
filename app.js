@@ -1,5 +1,5 @@
 // app.js
-import { collection, doc, getDoc, getDocs, query, where, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // Use the same global `db` from firebase-init.js
 const db = window.db;
@@ -376,15 +376,33 @@ function renderLanguageSelector() {
 function renderLogin(){
   document.getElementById("main-nav").style.display = "none";
   document.getElementById("app").innerHTML = `
-    <form id="loginForm" class="login-form">
-      <h2>${getContent('login', 'signIn')}</h2>
-      <input id="first" placeholder="${getContent('login', 'firstName')}" required />
-      <input id="last"  placeholder="${getContent('login', 'lastName')}"  required />
-      <input id="pass"  type="password" placeholder="${getContent('login', 'password')}" required />
-      <button class="login-button">${getContent('login', 'enter')}</button>
-      <div id="loginError" class="error"></div>
-    </form>
-    <div id="suggestions"></div>
+    <div class="login-container">
+      <div class="login-background" style="background-image: url('images/photos/login_photo.jpg')"></div>
+      <div class="login-overlay"></div>
+      <div class="login-content">
+        <div class="login-header">
+          <h1>Alomi & Sebastian</h1>
+          <h2>September 13, 2025</h2>
+        </div>
+        <form id="loginForm" class="login-form">
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input id="first" placeholder="${getContent('login', 'firstName')}" required />
+          </div>
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input id="last"  placeholder="${getContent('login', 'lastName')}"  required />
+          </div>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input id="pass"  type="password" placeholder="${getContent('login', 'password')}" required />
+          </div>
+          <button class="login-button">${getContent('login', 'enter')}</button>
+          <div id="loginError" class="error"></div>
+        </form>
+        <div id="suggestions"></div>
+      </div>
+    </div>
   `;
   document.getElementById("loginForm").onsubmit = async e => {
     e.preventDefault();
@@ -457,9 +475,67 @@ function renderLogin(){
   };
 }
 
-function finishLogin(uid, isAdmin = false){
+// Add this function after the other helper functions at the top
+function preloadPhotos() {
+  const photos = [
+    'images/photos/photo1.jpg',
+    'images/photos/photo2.jpg',
+    'images/photos/photo3.jpg',
+    'images/photos/photo4.jpg',
+    'images/photos/photo5.jpg',
+    'images/photos/photo6.jpg',
+    'images/photos/photo7.jpg',
+    'images/photos/photo8.jpg',
+    'images/photos/photo9.jpg',
+    'images/photos/photo10.jpg',
+    'images/photos/photo11.jpg',
+    'images/photos/photo12.jpg',
+    'images/photos/photo13.jpg',
+    'images/photos/photo14.jpg',
+    'images/photos/photo15.jpg',
+    'images/photos/photo16.jpg',
+    'images/photos/photo17.jpg',
+    'images/photos/photo18.jpg',
+    'images/photos/photo19.jpg',
+    'images/photos/photo20.jpg',
+    'images/photos/photo21.jpg',
+    'images/photos/photo22.jpg',
+    'images/photos/photo23.jpg',
+    'images/photos/photo24.jpg',
+    'images/photos/photo25.jpg',
+    'images/photos/photo26.jpg',
+    'images/photos/photo27.jpg',
+    'images/photos/photo28.jpg',
+    'images/photos/photo29.jpg',
+    'images/photos/photo30.jpg',
+    'images/photos/photo31.jpg',
+    'images/photos/photo32.jpg',
+    'images/photos/photo33.jpg',
+  ];
+
+  // Create an array to store the loading promises
+  const preloadPromises = photos.map(src => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = src;
+    });
+  });
+
+  // Return a promise that resolves when all images are loaded
+  return Promise.allSettled(preloadPromises);
+}
+
+// Modify the finishLogin function to preload photos
+async function finishLogin(uid, isAdmin = false){
   sessionStorage.setItem("weddingUser", uid);
   sessionStorage.setItem("isAdmin", isAdmin);
+  
+  // Start preloading photos in the background
+  preloadPhotos().catch(err => console.warn('Some photos failed to preload:', err));
+  
+  // Navigate to home immediately without waiting for preload
   navigate("home");
 }
 
@@ -508,16 +584,13 @@ const routes = {
 function renderNav(active, isAdmin, needsRSVP) {
   const nav = document.getElementById("main-nav");
   nav.style.display = "flex";
-  
-  // Filter routes based on admin status
+  // Filter routes based on admin status and hide registry
   const availableRoutes = Object.entries(routes).filter(([key]) => 
-    key !== "admin" || isAdmin
+    (key !== "admin" || isAdmin) && key !== "registry"
   );
-  
   nav.innerHTML = availableRoutes.map(([k,v]) =>
     `<a data-route="${k}" class="${k===active?'active':''} ${k==='rsvp' && needsRSVP ? 'needs-rsvp':''}">${v.title()}</a>`
   ).join("");
-  
   nav.querySelectorAll("a").forEach(a =>
     a.onclick = ()=> navigate(a.dataset.route)
   );
@@ -552,6 +625,12 @@ async function navigate(route){
   if (menuBtn) menuBtn.classList.remove('visible');
   
   await routes[route].render(currentUser);
+
+  // Scroll to top after rendering the new page
+  window.scrollTo({
+    top: 0,
+    behavior: 'instant' // Use 'instant' instead of 'smooth' to prevent animation issues
+  });
 }
 
 // --- 5. Page Renderers ---
@@ -881,7 +960,7 @@ async function renderPhotos() {
       const photoGallery = document.getElementById('photoGallery');
       photoGallery.innerHTML = ''; // Clear loading message
 
-      // Get all photos from the directory
+      // Use the same photo array as preloadPhotos
       const photos = [
         'images/photos/photo1.jpg',
         'images/photos/photo2.jpg',
@@ -1266,7 +1345,15 @@ async function renderRSVP(user){
   const snap = await getDocs(query(collection(db,"users"),
     where("groupId","==",user.groupId)));
   const members = snap.docs.map(d=>({ uid:d.id, ...d.data() }));
-  
+  // Ensure main user is first, +1 second
+  members.sort((a, b) => {
+    if (a.uid === user.uid) return -1;
+    if (b.uid === user.uid) return 1;
+    if (a.isPlusOne && a.plusOneOf === user.uid) return 1;
+    if (b.isPlusOne && b.plusOneOf === user.uid) return -1;
+    return 0;
+  });
+
   // Define events and their IDs
   const events = [
     { id: "Church", title: "Church Ceremony" },
@@ -1348,23 +1435,39 @@ async function renderRSVP(user){
   </div>`;
   app.innerHTML = html;
 
-  document.getElementById('submitRSVP').onclick = async ()=>{
+  document.getElementById('submitRSVP').onclick = async () => {
     try {
+      const submitButton = document.getElementById('submitRSVP');
+      submitButton.disabled = true;
+      submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+      // Create success message div if it doesn't exist
+      let successMsg = document.querySelector('.rsvp-success');
+      if (!successMsg) {
+        successMsg = document.createElement('div');
+        successMsg.className = 'rsvp-success';
+        document.querySelector('.rsvp-container').insertBefore(
+          successMsg,
+          document.querySelector('.rsvp-table')
+        );
+      }
+      successMsg.style.display = 'none';
+
       // Save RSVPs for existing members
-      const rsvpPromises = document.querySelectorAll("input[type=checkbox]:not(.plus-one-event)").forEach(async cb=>{
-        await setDoc(doc(db,"rsvps",`${cb.dataset.uid}_${cb.dataset.event}`),{
+      const rsvpPromises = Array.from(document.querySelectorAll("input[type=checkbox]:not(.plus-one-event)")).map(cb =>
+        setDoc(doc(db,"rsvps",`${cb.dataset.uid}_${cb.dataset.event}`),{
           userId:cb.dataset.uid,
           eventId:cb.dataset.event,
           attending:cb.checked
-        });
-      });
+        })
+      );
 
       // Save allergies for existing members
-      const allergyPromises = document.querySelectorAll(".allergies-input:not(#plusOneAllergies)").forEach(async input => {
-        await setDoc(doc(db,"users",input.dataset.uid),{
+      const allergyPromises = Array.from(document.querySelectorAll(".allergies-input:not(#plusOneAllergies)")).map(input =>
+        setDoc(doc(db,"users",input.dataset.uid),{
           allergies: input.value.trim()
-        }, { merge: true });
-      });
+        }, { merge: true })
+      );
 
       // Handle +1 guest if present
       if (members.length === 1) {
@@ -1373,7 +1476,15 @@ async function renderRSVP(user){
         const plusOneAllergies = document.getElementById('plusOneAllergies').value.trim();
         
         if (plusOneFirstName && plusOneLastName) {
-          // Create new user document for +1
+          const eventIds = ["Church", "WelcomeParty", "MainWedding", "SundayBrunchEarly", "SundayBrunchLate"];
+          const plusOneInvites = {};
+          const plusOneRSVPs = {};
+          // Read from the form for each event
+          for (const evId of eventIds) {
+            const cb = document.querySelector(`.plus-one-event[data-event="${evId}"]`);
+            plusOneInvites[`invited${evId}`] = !!cb;
+            plusOneRSVPs[evId] = cb && cb.checked;
+          }
           const plusOneRef = doc(collection(db, "users"));
           await setDoc(plusOneRef, {
             firstName: plusOneFirstName,
@@ -1382,16 +1493,14 @@ async function renderRSVP(user){
             allergies: plusOneAllergies,
             isPlusOne: true,
             plusOneOf: user.uid,
-            invitedMainWedding: true // By default, +1 is invited to main wedding
+            hasRSVPed: true,
+            ...plusOneInvites
           });
-
-          // Save RSVPs for +1
-          const plusOneEvents = document.querySelectorAll('.plus-one-event:checked');
-          for (const event of plusOneEvents) {
-            await setDoc(doc(db, "rsvps", `${plusOneRef.id}_${event.dataset.event}`), {
+          for (const evId of eventIds) {
+            await setDoc(doc(db, "rsvps", `${plusOneRef.id}_${evId}`), {
               userId: plusOneRef.id,
-              eventId: event.dataset.event,
-              attending: true
+              eventId: evId,
+              attending: plusOneRSVPs[evId]
             });
           }
         }
@@ -1403,10 +1512,50 @@ async function renderRSVP(user){
       );
 
       await Promise.all([...rsvpPromises, ...allergyPromises, ...groupUpdatePromises]);
-      navigate("home");
+
+      // Update success message and button
+      successMsg.innerHTML = `
+        <div class="success-content">
+          <i class="fas fa-check-circle"></i>
+          <p>Thank you for your RSVP! Your response has been recorded.</p>
+          <p class="success-subtitle">You can update your response anytime before July 13, 2025.</p>
+        </div>
+      `;
+      successMsg.style.display = 'block';
+      
+      // Smooth scroll to success message
+      successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Update button state
+      submitButton.disabled = false;
+      submitButton.textContent = getContent('rsvp', 'resubmit');
+      
+      // Update user's hasRSVPed status locally to maintain state
+      user.hasRSVPed = true;
+
     } catch (error) {
       console.error("Error submitting RSVP:", error);
-      alert("There was an error submitting your RSVP. Please try again.");
+      const submitButton = document.getElementById('submitRSVP');
+      submitButton.disabled = false;
+      submitButton.textContent = user.hasRSVPed ? getContent('rsvp', 'resubmit') : getContent('rsvp', 'submit');
+      
+      // Show error message
+      let errorMsg = document.querySelector('.rsvp-error');
+      if (!errorMsg) {
+        errorMsg = document.createElement('div');
+        errorMsg.className = 'rsvp-error';
+        document.querySelector('.rsvp-container').insertBefore(
+          errorMsg,
+          document.querySelector('.rsvp-table')
+        );
+      }
+      errorMsg.innerHTML = `
+        <div class="error-content">
+          <i class="fas fa-exclamation-circle"></i>
+          <p>There was an error submitting your RSVP. Please try again.</p>
+        </div>
+      `;
+      errorMsg.style.display = 'block';
     }
   };
 }
@@ -1420,126 +1569,221 @@ async function renderAdmin(user) {
 
     // Fetch all users
     const userSnap = await getDocs(collection(db, "users"));
-    const users = {};
-    userSnap.forEach(d => users[d.id] = d.data());
+    const users = userSnap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
     // Fetch all RSVPs
     const rsvpSnap = await getDocs(collection(db, "rsvps"));
-    const rows = rsvpSnap.docs.map(rs => {
-      const { userId, eventId, attending } = rs.data();
-      const u = users[userId];
-      if (!u) {
-        console.warn(`User ${userId} not found for RSVP`);
-        return null;
-      }
-      return {
-        name: `${u.firstName} ${u.lastName}`,
-        group: u.groupId,
-        event: events[eventId] || eventId,
-        attending: attending ? "Yes" : "No",
-        allergies: u.allergies || ""
-      };
-    }).filter(r => r !== null);
-
-    // Calculate statistics
-    const stats = {
-      total: rows.length,
-      attending: rows.filter(r => r.attending === "Yes").length,
-      byEvent: {},
-      byGroup: {},
-      withAllergies: rows.filter(r => r.allergies).length
-    };
-
-    rows.forEach(r => {
-      stats.byEvent[r.event] = (stats.byEvent[r.event] || 0) + 1;
-      stats.byGroup[r.group] = (stats.byGroup[r.group] || 0) + 1;
+    const rsvps = {};
+    rsvpSnap.docs.forEach(doc => {
+      const { userId, eventId, attending } = doc.data();
+      if (!rsvps[userId]) rsvps[userId] = {};
+      rsvps[userId][eventId] = attending;
     });
 
     // Build the admin view
     let html = `
       <div class="admin-dashboard">
-        <h1>RSVP Dashboard</h1>
+        <h1>Admin Dashboard</h1>
         
-        <div class="stats-section">
-          <h2>Statistics</h2>
-          <div class="stats-grid">
-            <div class="stat-box">
-              <h3>Total RSVPs</h3>
-              <p>${stats.total}</p>
-            </div>
-            <div class="stat-box">
-              <h3>Attending</h3>
-              <p>${stats.attending}</p>
-            </div>
-            <div class="stat-box">
-              <h3>With Allergies</h3>
-              <p>${stats.withAllergies}</p>
-            </div>
+        <div class="admin-actions">
+          <button id="addUserBtn" class="admin-button">
+            <i class="fas fa-user-plus"></i> Add New User
+          </button>
+          <div class="search-filters">
+            <input type="text" id="searchInput" placeholder="Search guests..." class="admin-search">
+            <button id="clearFilters" class="admin-button">Clear Filters</button>
           </div>
         </div>
 
-        <div class="filters">
-          <select id="eventFilter">
-            <option value="">All Events</option>
-            ${Object.keys(stats.byEvent).map(ev => 
-              `<option value="${ev}">${ev} (${stats.byEvent[ev]})</option>`
-            ).join("")}
-          </select>
-          <select id="groupFilter">
-            <option value="">All Groups</option>
-            ${Object.keys(stats.byGroup).map(group => 
-              `<option value="${group}">${group} (${stats.byGroup[group]})</option>`
-            ).join("")}
-          </select>
-        </div>
-
         <div class="table-container">
-          <table>
+          <table id="adminTable" class="admin-table">
             <thead>
               <tr>
-                <th>Guest</th>
-                <th>Group</th>
-                <th>Event</th>
-                <th>Attending</th>
-                <th>Allergies</th>
+                <th data-sort="groupId">Group <i class="fas fa-sort"></i></th>
+                <th data-sort="name">Guest <i class="fas fa-sort"></i></th>
+                <th data-sort="hasRSVPed">Has RSVPed <i class="fas fa-sort"></i></th>
+                <th data-sort="isPlusOne">+1 <i class="fas fa-sort"></i></th>
+                <th data-sort="invitedChurch">Church <i class="fas fa-sort"></i></th>
+                <th data-sort="invitedWelcomeParty">Welcome Party <i class="fas fa-sort"></i></th>
+                <th data-sort="invitedMainWedding">Wedding <i class="fas fa-sort"></i></th>
+                <th data-sort="invitedSundayBrunchEarly">Brunch (Early) <i class="fas fa-sort"></i></th>
+                <th data-sort="invitedSundayBrunchLate">Brunch (Late) <i class="fas fa-sort"></i></th>
+                <th data-sort="allergies">Allergies <i class="fas fa-sort"></i></th>
+                <th>Actions</th>
+              </tr>
+              <tr id="filterRow">
+                <th><input type="text" placeholder="Filter group..." data-filter="groupId"></th>
+                <th><input type="text" placeholder="Filter name..." data-filter="name"></th>
+                <th>
+                  <select data-filter="hasRSVPed">
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="isPlusOne">
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="Church">
+                    <option value="">All</option>
+                    <option value="invited">Invited</option>
+                    <option value="not-invited">Not Invited</option>
+                    <option value="rsvp-yes">Invited - RSVPed Yes</option>
+                    <option value="rsvp-no">Invited - RSVPed No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="WelcomeParty">
+                    <option value="">All</option>
+                    <option value="invited">Invited</option>
+                    <option value="not-invited">Not Invited</option>
+                    <option value="rsvp-yes">Invited - RSVPed Yes</option>
+                    <option value="rsvp-no">Invited - RSVPed No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="MainWedding">
+                    <option value="">All</option>
+                    <option value="invited">Invited</option>
+                    <option value="not-invited">Not Invited</option>
+                    <option value="rsvp-yes">Invited - RSVPed Yes</option>
+                    <option value="rsvp-no">Invited - RSVPed No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="SundayBrunchEarly">
+                    <option value="">All</option>
+                    <option value="invited">Invited</option>
+                    <option value="not-invited">Not Invited</option>
+                    <option value="rsvp-yes">Invited - RSVPed Yes</option>
+                    <option value="rsvp-no">Invited - RSVPed No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="SundayBrunchLate">
+                    <option value="">All</option>
+                    <option value="invited">Invited</option>
+                    <option value="not-invited">Not Invited</option>
+                    <option value="rsvp-yes">Invited - RSVPed Yes</option>
+                    <option value="rsvp-no">Invited - RSVPed No</option>
+                  </select>
+                </th>
+                <th><input type="text" placeholder="Filter allergies..." data-filter="allergies"></th>
+                <th></th>
               </tr>
             </thead>
-            <tbody id="rsvpTableBody">
-              ${rows.map(r => `
-                <tr data-event="${r.event}" data-group="${r.group}">
-                  <td>${r.name}</td>
-                  <td>${r.group}</td>
-                  <td>${r.event}</td>
-                  <td>${r.attending}</td>
-                  <td>${r.allergies}</td>
-                </tr>
-              `).join("")}
+            <tbody>
+            ${users.map(user => {
+              // 1) build your event‐cells string
+              const eventCells = [
+                'Church','WelcomeParty','MainWedding','SundayBrunchEarly','SundayBrunchLate'
+              ].map(evId => {
+                const invited = user[`invited${evId}`];
+                const rsvp   = rsvps[user.id]?.[evId];
+                return `
+                  <td class="admin-event-status">
+                    <div class="admin-event-invited">
+                      <input type="checkbox" ${invited ? 'checked' : ''} data-event="${evId}">
+                    </div>
+                    ${invited
+                      ? `<div class="admin-event-rsvp ${rsvp===true?'rsvp-yes':rsvp===false?'rsvp-no':''}">
+                           ${ rsvp===true ? '✔' : rsvp===false ? '✖' : '' }
+                         </div>`
+                      : ''
+                    }
+                  </td>`;
+              }).join('');
+
+              // 2) return the full <tr>
+              return `
+                <tr data-user-id="${user.id}">
+                  <td>${user.groupId}</td>
+                  <td>${user.firstName} ${user.lastName}</td>
+                  <td>${user.hasRSVPed ? '✔' : '✖'}</td>
+                  <td>${user.isPlusOne ? '✔' : ''}</td>
+                  ${eventCells}
+                  <td>${user.allergies||''}</td>
+                  <td>
+                    <button class="edit-user-btn">✎</button>
+                    <button class="clear-rsvp-btn" ${user.hasRSVPed?'':'disabled'}>🗑</button>
+                  </td>
+                </tr>`;
+            }).join('')}
             </tbody>
           </table>
         </div>
       </div>
     `;
 
-    document.getElementById("app").innerHTML = html;
+    document.getElementById("app").innerHTML = html.trim();
 
-    // Add filter functionality
-    const eventFilter = document.getElementById("eventFilter");
-    const groupFilter = document.getElementById("groupFilter");
-    const tableBody = document.getElementById("rsvpTableBody");
-
-    function applyFilters() {
-      const eventValue = eventFilter.value;
-      const groupValue = groupFilter.value;
-
-      tableBody.querySelectorAll("tr").forEach(row => {
-        const eventMatch = !eventValue || row.dataset.event === eventValue;
-        const groupMatch = !groupValue || row.dataset.group === groupValue;
-        row.style.display = eventMatch && groupMatch ? "" : "none";
+    // Add event listeners for sorting
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => {
+        const field = th.dataset.sort;
+        sortTable(field);
       });
-    }
+    });
 
-    eventFilter.addEventListener("change", applyFilters);
-    groupFilter.addEventListener("change", applyFilters);
+    // Add event listeners for filtering
+    document.querySelectorAll('[data-filter]').forEach(input => {
+      input.addEventListener('input', () => {
+        filterTable();
+      });
+    });
+
+    // Clear filters button
+    document.getElementById('clearFilters').addEventListener('click', () => {
+      document.querySelectorAll('[data-filter]').forEach(input => {
+        input.value = '';
+      });
+      filterTable();
+    });
+
+    // Add event listeners for user actions
+    document.querySelectorAll('.edit-user-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const row = e.target.closest('tr');
+        const userId = row.dataset.userId;
+        showEditUserModal(users.find(u => u.id === userId));
+      });
+    });
+
+    document.querySelectorAll('.clear-rsvp-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        if (!confirm('Are you sure you want to clear this user\'s RSVPs?')) return;
+        
+        const row = e.target.closest('tr');
+        const userId = row.dataset.userId;
+        await clearUserRSVPs(userId);
+        renderAdmin(user); // Refresh the page
+      });
+    });
+
+    // Add new user button
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+      showAddUserModal();
+    });
+
+    // Add event listeners for event checkboxes
+    document.querySelectorAll('input[type="checkbox"][data-event]').forEach(checkbox => {
+      checkbox.addEventListener('change', async (e) => {
+        const userId = e.target.closest('tr').dataset.userId;
+        const event = e.target.dataset.event;
+        const checked = e.target.checked;
+        
+        await updateUserEvent(userId, event, checked);
+      });
+    });
+
   } catch (error) {
     console.error("Error rendering admin view:", error);
     document.getElementById("app").innerHTML = `
@@ -1550,6 +1794,297 @@ async function renderAdmin(user) {
       </div>
     `;
   }
+}
+
+// Helper functions for admin page
+async function updateUserEvent(userId, event, invited) {
+  try {
+    await setDoc(doc(db, "users", userId), {
+      [`invited${event}`]: invited
+    }, { merge: true });
+  } catch (error) {
+    console.error("Error updating user event:", error);
+    alert("Error updating user event. Please try again.");
+  }
+}
+
+async function clearUserRSVPs(userId) {
+  try {
+    // Clear hasRSVPed flag
+    await setDoc(doc(db, "users", userId), {
+      hasRSVPed: false
+    }, { merge: true });
+
+    // Delete all RSVPs for this user
+    const rsvpSnap = await getDocs(query(collection(db, "rsvps"), where("userId", "==", userId)));
+    const deletePromises = rsvpSnap.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+  } catch (error) {
+    console.error("Error clearing RSVPs:", error);
+    alert("Error clearing RSVPs. Please try again.");
+  }
+}
+
+function showEditUserModal(user) {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>Edit User</h2>
+      <form id="editUserForm">
+        <div class="form-group">
+          <label>First Name:</label>
+          <input type="text" name="firstName" value="${user.firstName}" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name:</label>
+          <input type="text" name="lastName" value="${user.lastName}" required>
+        </div>
+        <div class="form-group">
+          <label>Preferred Name:</label>
+          <input type="text" name="preferredName" value="${user.preferredName || ''}">
+        </div>
+        <div class="form-group">
+          <label>Group ID:</label>
+          <input type="text" name="groupId" value="${user.groupId}" required>
+        </div>
+        <div class="form-group">
+          <label>Allergies:</label>
+          <input type="text" name="allergies" value="${user.allergies || ''}">
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Save</button>
+          <button type="button" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector('.cancel-btn').onclick = () => {
+    modal.remove();
+  };
+
+  modal.querySelector('#editUserForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const updates = Object.fromEntries(formData.entries());
+    
+    try {
+      await setDoc(doc(db, "users", user.id), updates, { merge: true });
+      modal.remove();
+      renderAdmin(user); // Refresh the page
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Error updating user. Please try again.");
+    }
+  };
+}
+
+function showAddUserModal() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>Add New User</h2>
+      <form id="addUserForm">
+        <div class="form-group">
+          <label>First Name:</label>
+          <input type="text" name="firstName" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name:</label>
+          <input type="text" name="lastName" required>
+        </div>
+        <div class="form-group">
+          <label>Preferred Name:</label>
+          <input type="text" name="preferredName">
+        </div>
+        <div class="form-group">
+          <label>Group ID:</label>
+          <input type="text" name="groupId" required>
+        </div>
+        <div class="form-group">
+          <label>Allergies:</label>
+          <input type="text" name="allergies">
+        </div>
+        <div class="event-checkboxes">
+          <h3>Invited Events:</h3>
+          <label><input type="checkbox" name="invitedChurch"> Church</label>
+          <label><input type="checkbox" name="invitedWelcomeParty"> Welcome Party</label>
+          <label><input type="checkbox" name="invitedMainWedding"> Wedding</label>
+          <label><input type="checkbox" name="invitedSundayBrunchEarly"> Sunday Brunch (Early)</label>
+          <label><input type="checkbox" name="invitedSundayBrunchLate"> Sunday Brunch (Late)</label>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">Add User</button>
+          <button type="button" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector('.cancel-btn').onclick = () => {
+    modal.remove();
+  };
+
+  modal.querySelector('#addUserForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const userData = {
+      ...Object.fromEntries(formData.entries()),
+      hasRSVPed: false,
+      isPlusOne: false
+    };
+
+    // Convert checkbox values to booleans
+    ['invitedChurch', 'invitedWelcomeParty', 'invitedMainWedding', 
+     'invitedSundayBrunchEarly', 'invitedSundayBrunchLate'].forEach(event => {
+      userData[event] = formData.get(event) === 'on';
+    });
+    
+    try {
+      await addDoc(collection(db, "users"), userData);
+      modal.remove();
+      renderAdmin(); // Refresh the page
+    } catch (error) {
+      console.error("Error adding user:", error);
+      alert("Error adding user. Please try again.");
+    }
+  };
+}
+
+function sortTable(field) {
+  const table = document.getElementById('adminTable');
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  
+  const th = table.querySelector(`th[data-sort="${field}"]`);
+  const isAsc = th.classList.contains('asc');
+  
+  // Clear all sort indicators
+  table.querySelectorAll('th').forEach(th => {
+    th.classList.remove('asc', 'desc');
+  });
+  
+  // Set new sort indicator
+  th.classList.toggle('asc', !isAsc);
+  th.classList.toggle('desc', isAsc);
+
+  rows.sort((a, b) => {
+    let aVal, bVal;
+    
+    if (field === 'name') {
+      aVal = a.querySelector('.user-name').textContent.trim();
+      bVal = b.querySelector('.user-name').textContent.trim();
+    } else if (field === 'hasRSVPed' || field === 'isPlusOne') {
+      aVal = a.querySelector(`td:nth-child(${field === 'hasRSVPed' ? 3 : 4})`).querySelector('i.fa-check') !== null;
+      bVal = b.querySelector(`td:nth-child(${field === 'hasRSVPed' ? 3 : 4})`).querySelector('i.fa-check') !== null;
+    } else {
+      aVal = a.querySelector(`td:nth-child(${Array.from(th.parentNode.children).indexOf(th) + 1})`).textContent.trim();
+      bVal = b.querySelector(`td:nth-child(${Array.from(th.parentNode.children).indexOf(th) + 1})`).textContent.trim();
+    }
+    
+    if (aVal === bVal) return 0;
+    if (isAsc) {
+      return aVal > bVal ? 1 : -1;
+    } else {
+      return aVal < bVal ? 1 : -1;
+    }
+  });
+  
+  rows.forEach(row => tbody.appendChild(row));
+}
+
+function filterTable() {
+  const table = document.getElementById('adminTable');
+  const rows = table.querySelectorAll('tbody tr');
+  const filters = {};
+  
+  // Collect all filter values
+  document.querySelectorAll('[data-filter]').forEach(input => {
+    const value = input.value.toLowerCase();
+    if (value) { // Only add non-empty filters
+      filters[input.dataset.filter] = value;
+    }
+  });
+  
+  let visibleCount = 0;
+  rows.forEach(row => {
+    let show = true;
+
+    for (const [field, value] of Object.entries(filters)) {
+      if (!show) break; // Skip remaining checks if already hidden
+
+      switch (field) {
+        case 'name':
+          const guestCell = row.cells[1];
+          if (!guestCell.textContent.toLowerCase().includes(value)) show = false;
+          break;
+        case 'groupId':
+          const groupCell = row.cells[0];
+          if (!groupCell.textContent.toLowerCase().includes(value)) show = false;
+          break;
+        case 'hasRSVPed':
+          const rsvpCell = row.cells[2];
+          const hasCheck = rsvpCell.textContent.trim() === '✔';
+          if ((value === 'true' && !hasCheck) || (value === 'false' && hasCheck)) show = false;
+          break;
+        case 'isPlusOne':
+          const plusOneCell = row.cells[3];
+          const isPlusOne = plusOneCell.textContent.trim() === '✔';
+          if ((value === 'true' && !isPlusOne) || (value === 'false' && isPlusOne)) show = false;
+          break;
+        case 'allergies':
+          const allergiesCell = row.cells[row.cells.length - 2];
+          if (!allergiesCell.textContent.toLowerCase().includes(value)) show = false;
+          break;
+        case 'Church':
+        case 'WelcomeParty':
+        case 'MainWedding':
+        case 'SundayBrunchEarly':
+        case 'SundayBrunchLate':
+          const eventCell = row.querySelector(`td.admin-event-status input[data-event="${field}"]`)?.closest('td');
+          if (!eventCell) {
+            show = false;
+            break;
+          }
+          const isInvited = eventCell.querySelector('input[type="checkbox"]').checked;
+          const rsvpStatus = eventCell.querySelector('.admin-event-rsvp');
+          const rsvpYes = rsvpStatus?.classList.contains('rsvp-yes');
+          const rsvpNo = rsvpStatus?.classList.contains('rsvp-no');
+          switch(value) {
+            case 'invited':
+              if (!isInvited) show = false;
+              break;
+            case 'not-invited':
+              if (isInvited) show = false;
+              break;
+            case 'rsvp-yes':
+              if (!isInvited || !rsvpYes) show = false;
+              break;
+            case 'rsvp-no':
+              if (!isInvited || !rsvpNo) show = false;
+              break;
+          }
+          break;
+      }
+    }
+    row.style.display = show ? '' : 'none';
+    if (show) visibleCount++;
+  });
+  // Show visible count above the table
+  let countDiv = document.getElementById('guestCount');
+  if (!countDiv) {
+    countDiv = document.createElement('div');
+    countDiv.id = 'guestCount';
+    countDiv.style.margin = '10px 0';
+    table.parentNode.insertBefore(countDiv, table);
+  }
+  countDiv.textContent = `Guests shown: ${visibleCount}`;
 }
 
 // --- 6. Bootstrap ---
