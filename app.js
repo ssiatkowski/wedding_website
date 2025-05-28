@@ -1,8 +1,61 @@
 // app.js
-import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc, writeBatch, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // Use the same global `db` from firebase-init.js
 const db = window.db;
+
+// Cache management
+const cache = {
+  events: null,
+  scheduleEvents: null,
+  users: null,
+  lastFetch: null,
+  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
+
+  isStale() {
+    return !this.lastFetch || (Date.now() - this.lastFetch) > this.CACHE_DURATION;
+  },
+
+  async getEvents() {
+    if (!this.events || this.isStale()) {
+      const snap = await getDocs(collection(db, "events"));
+      this.events = {};
+      snap.forEach(d => this.events[d.id] = d.data().title);
+      this.lastFetch = Date.now();
+    }
+    return this.events;
+  },
+
+  async getScheduleEvents() {
+    if (!this.scheduleEvents || this.isStale()) {
+      const snap = await getDocs(collection(db, "events"));
+      this.scheduleEvents = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data(),
+        start: d.data().start?.toDate ? d.data().start.toDate() : new Date(d.data().start),
+        end: d.data().end?.toDate ? d.data().end.toDate() : new Date(d.data().end)
+      }));
+      this.lastFetch = Date.now();
+    }
+    return this.scheduleEvents;
+  },
+
+  async getUsers() {
+    if (!this.users || this.isStale()) {
+      const snap = await getDocs(collection(db, "users"));
+      this.users = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      this.lastFetch = Date.now();
+    }
+    return this.users;
+  },
+
+  clear() {
+    this.events = null;
+    this.scheduleEvents = null;
+    this.users = null;
+    this.lastFetch = null;
+  }
+};
 
 // Ensure Firebase is initialized
 if (!db) {
@@ -200,6 +253,7 @@ const content = {
       resubmit: "Resubmit RSVP",
       allergies: "Allergies",
       allergiesPlaceholder: "Enter any allergies",
+      dietaryRestrictions: "Dietary Restrictions",
       firstName: "First Name",
       lastName: "Last Name",
       firstNamePlaceholder: "First Name",
@@ -215,6 +269,7 @@ const content = {
       resubmit: "Wyślij ponownie RSVP",
       allergies: "Alergie",
       allergiesPlaceholder: "Wpisz alergie",
+      dietaryRestrictions: "Ograniczenia Dietetyczne",
       firstName: "Imię",
       lastName: "Nazwisko",
       firstNamePlaceholder: "Imię",
@@ -230,6 +285,7 @@ const content = {
       resubmit: "RSVP ફરીથી મોકલો",
       allergies: "એલર્જી",
       allergiesPlaceholder: "કોઈપણ એલર્જી લખો",
+      dietaryRestrictions: "આહાર પ્રતિબંધો",
       firstName: "પ્રથમ નામ",
       lastName: "છેલ્લું નામ",
       firstNamePlaceholder: "પ્રથમ નામ",
@@ -719,28 +775,20 @@ async function renderHome(user){
   setInterval(updateCountdown, 1000); // Update every second
 }
 
-async function renderSchedule(user){
-  const snap = await getDocs(collection(db,"events"));
+async function renderSchedule(user) {
+  // Get events from cache
+  const events = await cache.getScheduleEvents();
+  
   let html = `
     <div class="schedule-container">
       <h1>${getContent('schedule', 'title')}</h1>
       <div class="events-grid">
   `;
 
-  // Sort events by start time, properly handling Firestore timestamps
-  const events = snap.docs
-    .map(d => {
-      const data = d.data();
-      return {
-        id: d.id,
-        ...data,
-        start: data.start?.toDate ? data.start.toDate() : new Date(data.start),
-        end: data.end?.toDate ? data.end.toDate() : new Date(data.end)
-      };
-    })
-    .sort((a, b) => a.start - b.start);
+  // Sort events by start time
+  const sortedEvents = events.sort((a, b) => a.start - b.start);
 
-  events.forEach(ev => {
+  sortedEvents.forEach(ev => {
     const flag = "invited"+capitalize(ev.id);
     // Special case for after party - show if invited to main wedding
     const shouldShow = ev.id === "weddingAfterParty" 
@@ -1179,6 +1227,9 @@ async function renderDetails()  {
   `;
 }
 
+// Add registry state tracking
+let previousRegistryState = null;
+
 async function renderRegistry() {
   const intros = {
     en: `Your presence at our wedding is the greatest gift in the world. 
@@ -1328,50 +1379,61 @@ async function renderRegistry() {
   // submit
   submitButton.onclick = async () => {
     try {
-      // Get current user
-      const uid = sessionStorage.getItem("weddingUser");
-      if (!uid) {
-        throw new Error("User not logged in");
-      }
-
-      // Verify user exists before saving
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (!userDoc.exists()) {
-        throw new Error("User not found");
-      }
-
-      // Get allocations
-      const alloc = {};
+      // Get current allocations
+      const newAllocations = {};
       getAll().forEach(({ key, slider }) => {
         const amount = Math.floor(+slider.value);
         if (amount > 0) {
-          alloc[key] = amount;
+          newAllocations[key] = amount;
         }
       });
 
-      // Show loading state
-      submitButton.disabled = true;
-      statusDiv.innerHTML = '<div class="loading">Saving your contribution...</div>';
+      const totalAmount = Math.floor(+totalInput.value);
+      const newState = {
+        allocations: newAllocations,
+        totalAmount
+      };
 
-      // Save to Firebase
-      await setDoc(doc(db, "registry", uid), {
-        userId: uid,
-        allocations: alloc,
-        totalAmount: Math.floor(+totalInput.value),
-        timestamp: new Date()
-      });
+      // Only write if there are changes
+      if (JSON.stringify(previousRegistryState) !== JSON.stringify(newState)) {
+        // Show loading state
+        submitButton.disabled = true;
+        statusDiv.innerHTML = '<div class="loading">Saving your contribution...</div>';
 
-      // Show success message
-      statusDiv.innerHTML = '<div class="success">Thank you for your contribution!</div>';
-      
-      // Update button text
-      submitButton.textContent = 'Update Allocation';
-      
-      // Reset form after 2 seconds
-      setTimeout(() => {
-        statusDiv.innerHTML = '';
-        submitButton.disabled = false;
-      }, 2000);
+        // Create batch
+        const batch = writeBatch(db);
+        const registryRef = doc(db, "registry", uid);
+        
+        batch.set(registryRef, {
+          userId: uid,
+          allocations: newAllocations,
+          totalAmount,
+          timestamp: new Date()
+        });
+
+        // Commit changes
+        await batch.commit();
+
+        // Update previous state
+        previousRegistryState = newState;
+
+        // Show success message
+        statusDiv.innerHTML = '<div class="success">Thank you for your contribution!</div>';
+        
+        // Update button text
+        submitButton.textContent = 'Update Allocation';
+        
+        // Reset form after 2 seconds
+        setTimeout(() => {
+          statusDiv.innerHTML = '';
+          submitButton.disabled = false;
+        }, 2000);
+      } else {
+        statusDiv.innerHTML = '<div class="info">No changes to save.</div>';
+        setTimeout(() => {
+          statusDiv.innerHTML = '';
+        }, 2000);
+      }
 
     } catch (error) {
       console.error("Error saving registry contribution:", error);
@@ -1429,7 +1491,7 @@ async function renderRSVP(user){
   );
   
   invitedEvents.forEach(ev=> html+=`<th>${ev.title}</th>`);
-  html += `<th>${getContent('rsvp', 'allergies')} / Dietary Restrictions</th></tr></thead><tbody>`;
+  html += `<th>${getContent('rsvp', 'allergies')} / ${getContent('rsvp', 'dietaryRestrictions')}</th></tr></thead><tbody>`;
 
   members.forEach(m=>{
     html += `<tr><td>${m.firstName} ${m.lastName}</td>`;
@@ -1444,7 +1506,7 @@ async function renderRSVP(user){
       }
     });
     // Add allergies input field
-    html += `<td data-label="${getContent('rsvp', 'allergies')} / Dietary Restrictions"><input type="text" class="allergies-input" 
+    html += `<td data-label="${getContent('rsvp', 'allergies')} / ${getContent('rsvp', 'dietaryRestrictions')}"><input type="text" class="allergies-input" 
               data-uid="${m.uid}" 
               value="${m.allergies || ''}" 
               placeholder="${getContent('rsvp', 'allergiesPlaceholder')}"
@@ -1468,7 +1530,7 @@ async function renderRSVP(user){
       </td>`;
     });
     
-    html += `<td data-label="${getContent('rsvp', 'allergies')} / Dietary Restrictions">
+    html += `<td data-label="${getContent('rsvp', 'allergies')} / ${getContent('rsvp', 'dietaryRestrictions')}">
       <input type="text" id="plusOneAllergies" class="allergies-input" placeholder="${getContent('rsvp', 'allergiesPlaceholder')}" style="width: 90%;">
     </td></tr>`;
   }
@@ -1496,21 +1558,24 @@ async function renderRSVP(user){
       }
       successMsg.style.display = 'none';
 
+      // Create a batch for all writes
+      const batch = writeBatch(db);
+
       // Save RSVPs for existing members
-      const rsvpPromises = Array.from(document.querySelectorAll("input[type=checkbox]:not(.plus-one-event)")).map(cb =>
-        setDoc(doc(db,"rsvps",`${cb.dataset.uid}_${cb.dataset.event}`),{
-          userId:cb.dataset.uid,
-          eventId:cb.dataset.event,
-          attending:cb.checked
-        })
-      );
+      Array.from(document.querySelectorAll("input[type=checkbox]:not(.plus-one-event)")).forEach(cb => {
+        const rsvpRef = doc(db, "rsvps", `${cb.dataset.uid}_${cb.dataset.event}`);
+        batch.set(rsvpRef, {
+          userId: cb.dataset.uid,
+          eventId: cb.dataset.event,
+          attending: cb.checked
+        });
+      });
 
       // Save allergies for existing members
-      const allergyPromises = Array.from(document.querySelectorAll(".allergies-input:not(#plusOneAllergies)")).map(input =>
-        setDoc(doc(db,"users",input.dataset.uid),{
-          allergies: input.value.trim()
-        }, { merge: true })
-      );
+      Array.from(document.querySelectorAll(".allergies-input:not(#plusOneAllergies)")).forEach(input => {
+        const userRef = doc(db, "users", input.dataset.uid);
+        batch.update(userRef, { allergies: input.value.trim() });
+      });
 
       // Handle +1 guest if present
       if (members.length === 1) {
@@ -1522,14 +1587,16 @@ async function renderRSVP(user){
           const eventIds = ["Church", "WelcomeParty", "MainWedding", "SundayBrunchEarly", "SundayBrunchLate"];
           const plusOneInvites = {};
           const plusOneRSVPs = {};
+          
           // Read from the form for each event
           for (const evId of eventIds) {
             const cb = document.querySelector(`.plus-one-event[data-event="${evId}"]`);
             plusOneInvites[`invited${evId}`] = !!cb;
             plusOneRSVPs[evId] = cb && cb.checked;
           }
+
           const plusOneRef = doc(collection(db, "users"));
-          await setDoc(plusOneRef, {
+          batch.set(plusOneRef, {
             firstName: plusOneFirstName,
             lastName: plusOneLastName,
             groupId: user.groupId,
@@ -1539,8 +1606,10 @@ async function renderRSVP(user){
             hasRSVPed: true,
             ...plusOneInvites
           });
+
           for (const evId of eventIds) {
-            await setDoc(doc(db, "rsvps", `${plusOneRef.id}_${evId}`), {
+            const rsvpRef = doc(db, "rsvps", `${plusOneRef.id}_${evId}`);
+            batch.set(rsvpRef, {
               userId: plusOneRef.id,
               eventId: evId,
               attending: plusOneRSVPs[evId]
@@ -1550,11 +1619,16 @@ async function renderRSVP(user){
       }
 
       // Mark all group members as having RSVPed
-      const groupUpdatePromises = members.map(member => 
-        setDoc(doc(db, "users", member.uid), { hasRSVPed: true }, { merge: true })
-      );
+      members.forEach(member => {
+        const userRef = doc(db, "users", member.uid);
+        batch.update(userRef, { hasRSVPed: true });
+      });
 
-      await Promise.all([...rsvpPromises, ...allergyPromises, ...groupUpdatePromises]);
+      // Commit all changes in one batch
+      await batch.commit();
+
+      // Clear cache since we've made changes
+      cache.clear();
 
       // Update success message and button
       successMsg.innerHTML = `
@@ -1603,22 +1677,29 @@ async function renderRSVP(user){
   };
 }
 
+// Add pagination constants
+const USERS_PER_PAGE = 20;
+let currentPage = 1;
+
 async function renderAdmin(user) {
   try {
-    // Fetch all events
-    const evSnap = await getDocs(collection(db, "events"));
-    const events = {};
-    evSnap.forEach(d => events[d.id] = d.data().title);
+    // Fetch only necessary fields with pagination
+    const userSnap = await getDocs(query(
+      collection(db, "users"),
+      limit(USERS_PER_PAGE),
+      startAfter((currentPage - 1) * USERS_PER_PAGE)
+    ));
 
-    // Fetch all users
-    const userSnap = await getDocs(collection(db, "users"));
-    const users = userSnap.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
+    // Get events from cache
+    const events = await cache.getEvents();
 
-    // Fetch all RSVPs
-    const rsvpSnap = await getDocs(collection(db, "rsvps"));
+    // Fetch RSVPs only for visible users
+    const userIds = userSnap.docs.map(doc => doc.id);
+    const rsvpSnap = await getDocs(query(
+      collection(db, "rsvps"),
+      where("userId", "in", userIds)
+    ));
+
     const rsvps = {};
     rsvpSnap.docs.forEach(doc => {
       const { userId, eventId, attending } = doc.data();
@@ -1636,6 +1717,15 @@ async function renderAdmin(user) {
             <i class="fas fa-user-plus"></i> Add New User
           </button>
           <button id="clearFilters" class="admin-button">Clear Filters</button>
+          <div class="pagination-controls">
+            <button id="prevPage" class="admin-button" ${currentPage === 1 ? 'disabled' : ''}>
+              <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <span>Page ${currentPage}</span>
+            <button id="nextPage" class="admin-button" ${userSnap.docs.length < USERS_PER_PAGE ? 'disabled' : ''}>
+              Next <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
 
         <div class="table-container">
@@ -1737,7 +1827,8 @@ async function renderAdmin(user) {
               </tr>
             </thead>
             <tbody>
-            ${users.map(user => {
+            ${userSnap.docs.map(doc => {
+              const user = doc.data();
               // 1) build your event‐cells string
               const eventCells = [
                 'Church','WelcomeParty','MainWedding','SundayBrunchEarly','SundayBrunchLate'
@@ -1786,6 +1877,21 @@ async function renderAdmin(user) {
     `;
 
     document.getElementById("app").innerHTML = html.trim();
+
+    // Add pagination event listeners
+    document.getElementById('prevPage').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderAdmin(user);
+      }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+      if (userSnap.docs.length === USERS_PER_PAGE) {
+        currentPage++;
+        renderAdmin(user);
+      }
+    });
 
     // Add event listeners for sorting
     document.querySelectorAll('th[data-sort]').forEach(th => {
