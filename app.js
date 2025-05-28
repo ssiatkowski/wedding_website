@@ -1249,13 +1249,6 @@ async function renderDetails()  {
       </div>
 
       <div class="details-section">
-        <h2><i class="fas fa-gift"></i> ${getContent('details', 'registry')}</h2>
-        <div class="details-card">
-          <p>${getContent('details', 'registryText')}</p>
-        </div>
-      </div>
-
-      <div class="details-section">
         <h2><i class="fas fa-map-marked-alt"></i> ${getContent('details', 'location')}</h2>
         <div class="details-card">
           <p>${getContent('details', 'locationText')}</p>
@@ -1278,6 +1271,13 @@ async function renderDetails()  {
       </div>
       ` : ''}
 
+      <div class="details-section">
+        <h2><i class="fas fa-gift"></i> ${getContent('details', 'registry')}</h2>
+        <div class="details-card">
+          <p>${getContent('details', 'registryText')}</p>
+        </div>
+      </div>
+      
       <div class="details-section">
         <h2><i class="fas fa-question-circle"></i> ${getContent('details', 'questions')}</h2>
         <div class="details-card">
