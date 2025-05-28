@@ -1885,12 +1885,13 @@ async function renderAdmin(user) {
             <tbody>
             ${userSnap.docs.map(doc => {
               const user = doc.data();
+              const userId = doc.id;
               // 1) build your event‐cells string
               const eventCells = [
                 'Church','WelcomeParty','MainWedding','SundayBrunchEarly','SundayBrunchLate'
               ].map(evId => {
                 const invited = user[`invited${evId}`];
-                const rsvp   = rsvps[user.id]?.[evId];
+                const rsvp   = rsvps[userId]?.[evId];
                 return `
                   <td class="admin-event-status">
                     <div class="admin-event-invited">
@@ -1907,7 +1908,7 @@ async function renderAdmin(user) {
 
               // 2) return the full <tr>
               return `
-                <tr data-user-id="${user.id}">
+                <tr data-user-id="${userId}">
                   <td>${user.groupId}</td>
                   <td>${user.firstName} ${user.lastName}</td>
                   <td>${user.hasRSVPed ? '✔' : '✖'}</td>
@@ -1982,54 +1983,44 @@ async function renderAdmin(user) {
       showAddUserModal();
     });
 
-    // Add event listeners for event checkboxes
-    document.querySelectorAll('input[type="checkbox"][data-event]').forEach(checkbox => {
-      checkbox.addEventListener('change', async (e) => {
-        const userId = e.target.closest('tr').dataset.userId;
-        const event = e.target.dataset.event;
-        const checked = e.target.checked;
-        
-        await updateUserEvent(userId, event, checked);
-      });
-    });
+    // EVENT DELEGATION for all admin table checkboxes
+    const adminTable = document.getElementById('adminTable');
+    if (adminTable) {
+      adminTable.addEventListener('change', async (e) => {
+        const row = e.target.closest('tr');
+        if (!row) return;
+        const userId = row.dataset.userId;
 
-    // Add event listeners for plusOneAllowed checkboxes
-    document.querySelectorAll('.plus-one-allowed').forEach(checkbox => {
-      checkbox.addEventListener('change', async (e) => {
-        const userId = e.target.closest('tr').dataset.userId;
-        const checked = e.target.checked;
-        
-        try {
-          await setDoc(doc(db, "users", userId), {
-            plusOneAllowed: checked
-          }, { merge: true });
-        } catch (error) {
-          console.error("Error updating plusOneAllowed:", error);
-          alert("Error updating plusOneAllowed. Please try again.");
-          // Revert checkbox state
-          e.target.checked = !checked;
+        // plusOneAllowed
+        if (e.target.classList.contains('plus-one-allowed')) {
+          const checked = e.target.checked;
+          try {
+            await setDoc(doc(db, "users", userId), { plusOneAllowed: checked }, { merge: true });
+          } catch (error) {
+            e.target.checked = !checked;
+            alert("Error updating plusOneAllowed. Please try again.");
+          }
+        }
+
+        // kidsFAQ
+        if (e.target.classList.contains('kids-faq')) {
+          const checked = e.target.checked;
+          try {
+            await setDoc(doc(db, "users", userId), { kidsFAQ: checked }, { merge: true });
+          } catch (error) {
+            e.target.checked = !checked;
+            alert("Error updating kidsFAQ. Please try again.");
+          }
+        }
+
+        // event invited checkboxes
+        if (e.target.matches('input[type="checkbox"][data-event]')) {
+          const event = e.target.dataset.event;
+          const checked = e.target.checked;
+          await updateUserEvent(userId, event, checked);
         }
       });
-    });
-
-    // Add event listeners for kidsFAQ checkboxes
-    document.querySelectorAll('.kids-faq').forEach(checkbox => {
-      checkbox.addEventListener('change', async (e) => {
-        const userId = e.target.closest('tr').dataset.userId;
-        const checked = e.target.checked;
-        
-        try {
-          await setDoc(doc(db, "users", userId), {
-            kidsFAQ: checked
-          }, { merge: true });
-        } catch (error) {
-          console.error("Error updating kidsFAQ:", error);
-          alert("Error updating kidsFAQ. Please try again.");
-          // Revert checkbox state
-          e.target.checked = !checked;
-        }
-      });
-    });
+    }
 
   } catch (error) {
     console.error("Error rendering admin view:", error);
