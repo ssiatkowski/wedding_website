@@ -69,7 +69,7 @@ const content = {
       attire: "Attire"
     },
     pl: { 
-      title: "Harmonogram",
+      title: "Wydarzenia",
       attire: "Ubiór"
     },
     gu: { 
@@ -143,7 +143,12 @@ const content = {
       weather: "WEATHER",
       weatherText: "It's usually hot in the afternoon (~low 80s Fahrenheit) and cools down at night (~high 60s Fahrenheit).",
       questions: "QUESTIONS",
-      questionsText: "Call or text either of us with any questions!"
+      questionsText: "Call or text either of us with any questions!",
+      ceremony: "WEDDING CEREMONY",
+      ceremonyText: "We kindly request that you arrive on time to our Saturday ceremony to not disturb the celebration. It will begin at 4pm, but guests may start arriving at 3:30pm.",
+      indianAttire: "INDIAN ATTIRE",
+      indianAttireText: "Contact us if you would like to wear Indian attire and would like help with Indian clothes. We, and some of our family will be wearing Indian clothes, though they are not required. Alomi's grandparents brought Saris from India so we have extras that we can provide and help put on for the ladies who would like to wear them. Please contact us ahead of time to coordinate on the color/style you want, and we will let you know options for what can be worn underneath.",
+      kidsFAQ: "While we love your children, we have decided to keep our wedding and related events adults-only. We hope this advance notice means you can still join us and enjoy a night of celebration!"
     },
     pl: {
       title: "Szczegóły",
@@ -154,7 +159,12 @@ const content = {
       weather: "POGODA",
       weatherText: "Zazwyczaj jest gorąco po południu (~27°C) i chłodniej w nocy (~20°C).",
       questions: "PYTANIA",
-      questionsText: "Zadzwoń lub napisz do nas z jakimikolwiek pytaniami!"
+      questionsText: "Zadzwoń lub napisz do nas z jakimikolwiek pytaniami!",
+      ceremony: "CEREMONIA ŚLUBNA",
+      ceremonyText: "Uprzejmie prosimy o punktualne przybycie na naszą sobotnią ceremonię, aby nie zakłócać uroczystości. Rozpocznie się o 16:00, ale goście mogą zacząć przybywać od 15:30.",
+      indianAttire: "STROJE INDYJSKIE",
+      indianAttireText: "Skontaktuj się z nami, jeśli chciałbyś nosić strój indyjski i potrzebujesz pomocy w doborze ubrań. My i część naszej rodziny będziemy nosić stroje indyjskie, choć nie są one obowiązkowe. Dziadkowie Alomi przywieźli sari z Indii, więc mamy dodatkowe, które możemy zapewnić i pomóc założyć paniom, które chciałyby je nosić. Prosimy o wcześniejszy kontakt, aby uzgodnić kolor/styl, który Cię interesuje, a my poinformujemy Cię o dostępnych opcjach spodniej odzieży.",
+      kidsFAQ: "Mimo że kochamy Wasze dzieci, zdecydowaliśmy się na uroczystość tylko dla dorosłych. Mamy nadzieję, że dzięki temu wcześniejszemu powiadomieniu nadal będziecie mogli do nas dołączyć i cieszyć się wieczorem świętowania!"
     },
     gu: {
       title: "વિગતો",
@@ -165,7 +175,12 @@ const content = {
       weather: "હવામાન",
       weatherText: "દિવસે સામાન્ય રીતે ગરમ હોય છે (~27°C) અને રાત્રે ઠંડુ પડે છે (~20°C).",
       questions: "પ્રશ્નો",
-      questionsText: "કોઈપણ પ્રશ્નો માટે અમને કૉલ કરો અથવા મેસેજ કરો!"
+      questionsText: "કોઈપણ પ્રશ્નો માટે અમને કૉલ કરો અથવા મેસેજ કરો!",
+      ceremony: "લગ્ન સમારંભ",
+      ceremonyText: "અમે વિનંતી કરીએ છીએ કે તમે અમારા શનિવારના સમારંભમાં સમયસર પહોંચો જેથી ઉજવણીમાં વિક્ષેપ ન પડે. તે 4 વાગ્યે શરૂ થશે, પરંતુ મહેમાનો 3:30 વાગ્યાથી આવવાનું શરૂ કરી શકે છે.",
+      indianAttire: "ભારતીય પોશાક",
+      indianAttireText: "જો તમે ભારતીય પોશાક પહેરવા માંગતા હો અને ભારતીય કપડાંમાં મદદની જરૂર હોય તો અમારો સંપર્ક કરો. અમે અને અમારા કુટુંબના કેટલાક સભ્યો ભારતીય કપડાં પહેરીશું, જોકે તે જરૂરી નથી. અલોમીના દાદા-દાદી ભારતથી સાડી લાવ્યા છે, જેથી અમારી પાસે વધારાની સાડી છે જે અમે પ્રદાન કરી શકીએ છીએ અને જે સ્ત્રીઓ તે પહેરવા માંગે છે તેમને મદદ કરી શકીએ છીએ. કૃપા કરીને રંગ/શૈલી માટે અમારો સંપર્ક કરો જે તમે ઇચ્છો છો, અને અમે તમને નીચે પહેરી શકાય તેવા વિકલ્પો જણાવીશું.",
+      kidsFAQ: "જોકે અમને તમારા બાળકો ખૂબ પ્રિય છે, પરંતુ અમે અમારા લગ્ન અને સંબંધિત કાર્યક્રમો માત્ર પુખ્ત વયના લોકો માટે રાખવાનું નક્કી કર્યું છે. અમે આશા રાખીએ છીએ કે આ અગાઉની જાણકારીનો અર્થ એ છે કે તમે હજુ પણ અમારી સાથે જોડાઈ શકશો અને ઉજવણીના રાત્રિનો આનંદ લઈ શકશો!"
     }
   },
   photos: {
@@ -544,7 +559,7 @@ const routes = {
   home: { 
     title: () => {
       switch(currentLanguage) {
-        case 'pl': return 'Strona Główna';
+        case 'pl': return 'Start';
         case 'gu': return 'હોમ';
         default: return 'Home';
       }
@@ -1119,7 +1134,23 @@ async function renderDetails()  {
       <div class="details-section">
         <h2><i class="fas fa-child"></i> Kids</h2>
         <div class="details-card">
-          <p>While we love your children, we have decided to keep our wedding and related events adults-only. We hope this advance notice means you can still join us and enjoy a night of celebration!</p>
+          <p>${getContent('details', 'kidsFAQ')}</p>
+        </div>
+      </div>
+      ` : ''}
+
+      <div class="details-section">
+        <h2><i class="fas fa-ring"></i> ${getContent('details', 'ceremony')}</h2>
+        <div class="details-card">
+          <p>${getContent('details', 'ceremonyText')}</p>
+        </div>
+      </div>
+
+      ${currentUser.invitedWelcomeParty ? `
+      <div class="details-section">
+        <h2><i class="fas fa-tshirt"></i> ${getContent('details', 'indianAttire')}</h2>
+        <div class="details-card">
+          <p>${getContent('details', 'indianAttireText')}</p>
         </div>
       </div>
       ` : ''}

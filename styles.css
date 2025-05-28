@@ -1077,20 +1077,18 @@ input[type="checkbox"] {
 
 /* Mobile Styles */
 @media (max-width: 768px) {
-  /* Combined top bar */
   .language-selector {
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
-    background: var(--primary);
-    padding: var(--spacing-xs);
-    margin: 0;
-    justify-content: center;
-    border-radius: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px;
     display: flex;
-    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    z-index: 1000;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 20px));
   }
 
   nav#main-nav {
@@ -1226,9 +1224,16 @@ input[type="checkbox"] {
 @media (max-width: 768px) {
   .language-selector {
     position: fixed;
-    top: 0;
-    padding: var(--spacing-xs);
-    background: var(--primary);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 1000;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 20px));
   }
 
   .login-container {
