@@ -1552,7 +1552,7 @@ async function renderRSVP(user){
   );
   
   invitedEvents.forEach(ev=> html+=`<th>${ev.title}</th>`);
-  html += `<th>${getContent('rsvp', 'allergies')} / ${getContent('rsvp', 'dietaryRestrictions')}</th></tr></thead><tbody>`;
+  html += `<th>${getContent('rsvp', 'allergies')}\n/ ${getContent('rsvp', 'dietaryRestrictions')}</th></tr></thead><tbody>`;
 
   members.forEach(m=>{
     html += `<tr><td>${m.firstName} ${m.lastName}</td>`;
@@ -1567,7 +1567,7 @@ async function renderRSVP(user){
       }
     });
     // Add allergies input field
-    html += `<td data-label="${getContent('rsvp', 'allergies')} / ${getContent('rsvp', 'dietaryRestrictions')}"><input type="text" class="allergies-input" 
+    html += `<td data-label="${getContent('rsvp', 'allergies')} /\n${getContent('rsvp', 'dietaryRestrictions')}"><input type="text" class="allergies-input" 
               data-uid="${m.uid}" 
               value="${m.allergies || ''}" 
               placeholder="${getContent('rsvp', 'allergiesPlaceholder')}"
@@ -1591,7 +1591,7 @@ async function renderRSVP(user){
       </td>`;
     });
     
-    html += `<td data-label="${getContent('rsvp', 'allergies')} / ${getContent('rsvp', 'dietaryRestrictions')}">
+    html += `<td data-label="${getContent('rsvp', 'allergies')} /\n${getContent('rsvp', 'dietaryRestrictions')}">
       <input type="text" id="plusOneAllergies" class="allergies-input" placeholder="${getContent('rsvp', 'allergiesPlaceholder')}" style="width: 90%;">
     </td></tr>`;
   }

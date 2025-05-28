@@ -1034,21 +1034,23 @@ input[type="checkbox"] {
 }
 
 .hotel-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(45deg, var(--accent), var(--accent-light));
+  display: inline-block;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
   color: white;
   text-decoration: none;
+  border-radius: 25px;
   font-weight: 500;
-  border-radius: 4px;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+  text-align: left;
+  align-self: flex-start;
 }
 
 .hotel-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
 }
 
 .hotel-link i {
@@ -2210,4 +2212,8 @@ input::-webkit-outer-spin-button {
   .section-description p {
     font-size: 1rem;
   }
+}
+
+td[data-label]::before {
+  white-space: pre-line;
 }
