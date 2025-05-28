@@ -1,5 +1,5 @@
 // app.js
-import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc, writeBatch, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc, writeBatch, limit, startAfter, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // Use the same global `db` from firebase-init.js
 const db = window.db;
@@ -81,6 +81,7 @@ let currentUser = null;
 
 // Add currentRoute to track active route
 let currentRoute = 'home';
+let previousRoute = null;
 
 // Define content translations
 const content = {
@@ -147,7 +148,10 @@ const content = {
       bookingDesc: "Browse additional hotel options in the area through Booking.com.",
       searchHotels: "Search Hotels",
       searchAirbnb: "Search AirBnB",
-      searchBooking: "Search Booking.com"
+      searchBooking: "Search Booking.com",
+      transportationTitle: "Transportation",
+      transportationDesc: "We recommend renting a car for your stay.",
+      getDirections: "Get Directions"
     },
     pl: {
       title: "Podróż",
@@ -165,7 +169,10 @@ const content = {
       bookingDesc: "Przeglądaj dodatkowe opcje hoteli w okolicy przez Booking.com.",
       searchHotels: "Szukaj Hotelów",
       searchAirbnb: "Szukaj AirBnB",
-      searchBooking: "Szukaj na Booking.com"
+      searchBooking: "Szukaj na Booking.com",
+      transportationTitle: "Transport",
+      transportationDesc: "Zalecamy wynajęcie samochodu na miejscu.",
+      getDirections: "Uzyskaj Instrukcje"
     },
     gu: {
       title: "મુસાફરી",
@@ -183,7 +190,10 @@ const content = {
       bookingDesc: "Booking.com દ્વારા વિસ્તારમાં વધારાના હોટેલ વિકલ્પો બ્રાઉઝ કરો.",
       searchHotels: "હોટેલો શોધો",
       searchAirbnb: "AirBnB શોધો",
-      searchBooking: "Booking.com પર શોધો"
+      searchBooking: "Booking.com પર શોધો",
+      transportationTitle: "ટ્રાન્સપોર્ટ",
+      transportationDesc: "તમે તમારા માટે વાપરવા માટે વાપરવાની વિગતો આપવાની જરૂર છે.",
+      getDirections: "તમારી માટે માર્ગ મેળવવા માટે જાવો!"
     }
   },
   details: {
@@ -197,11 +207,9 @@ const content = {
       weatherText: "It's usually hot in the afternoon (~low 80s Fahrenheit) and cools down at night (~high 60s Fahrenheit).",
       questions: "QUESTIONS",
       questionsText: "Call or text either of us with any questions!",
-      ceremony: "WEDDING CEREMONY",
-      ceremonyText: "We kindly request that you arrive on time to our Saturday ceremony to not disturb the celebration. It will begin at 4pm, but guests may start arriving at 3:30pm.",
-      indianAttire: "INDIAN ATTIRE",
-      indianAttireText: "Contact us if you would like to wear Indian attire and would like help with Indian clothes. We, and some of our family will be wearing Indian clothes, though they are not required. Alomi's grandparents brought Saris from India so we have extras that we can provide and help put on for the ladies who would like to wear them. Please contact us ahead of time to coordinate on the color/style you want, and we will let you know options for what can be worn underneath.",
-      kidsFAQ: "While we love your children, we have decided to keep our wedding and related events adults-only. We hope this advance notice means you can still join us and enjoy a night of celebration!"
+      registry: "REGISTRY",
+      registryText: "We haven't created a registry - your presence is truly the only gift we need!",
+      kidsFAQ: "We love your children, but due to space restrictions, we respectfully request adults only. If this makes it challenging for you to attend, please reach out to us!"
     },
     pl: {
       title: "Szczegóły",
@@ -213,11 +221,9 @@ const content = {
       weatherText: "Zazwyczaj jest gorąco po południu (~27°C) i chłodniej w nocy (~20°C).",
       questions: "PYTANIA",
       questionsText: "Zadzwoń lub napisz do nas z jakimikolwiek pytaniami!",
-      ceremony: "CEREMONIA ŚLUBNA",
-      ceremonyText: "Uprzejmie prosimy o punktualne przybycie na naszą sobotnią ceremonię, aby nie zakłócać uroczystości. Rozpocznie się o 16:00, ale goście mogą zacząć przybywać od 15:30.",
-      indianAttire: "STROJE INDYJSKIE",
-      indianAttireText: "Skontaktuj się z nami, jeśli chciałbyś nosić strój indyjski i potrzebujesz pomocy w doborze ubrań. My i część naszej rodziny będziemy nosić stroje indyjskie, choć nie są one obowiązkowe. Dziadkowie Alomi przywieźli sari z Indii, więc mamy dodatkowe, które możemy zapewnić i pomóc założyć paniom, które chciałyby je nosić. Prosimy o wcześniejszy kontakt, aby uzgodnić kolor/styl, który Cię interesuje, a my poinformujemy Cię o dostępnych opcjach spodniej odzieży.",
-      kidsFAQ: "Mimo że kochamy Wasze dzieci, zdecydowaliśmy się na uroczystość tylko dla dorosłych. Mamy nadzieję, że dzięki temu wcześniejszemu powiadomieniu nadal będziecie mogli do nas dołączyć i cieszyć się wieczorem świętowania!"
+      registry: "LISTA PREZENTÓW",
+      registryText: "Nie stworzyliśmy listy prezentów - Twoja obecność to naprawdę jedyny prezent, którego potrzebujemy!",
+      kidsFAQ: "Kochamy Wasze dzieci, ale z powodu ograniczonej przestrzeni uprzejmie prosimy o obecność tylko dorosłych. Jeśli to sprawia, że trudno Wam będzie przyjechać, prosimy o kontakt!"
     },
     gu: {
       title: "વિગતો",
@@ -229,11 +235,9 @@ const content = {
       weatherText: "દિવસે સામાન્ય રીતે ગરમ હોય છે (~27°C) અને રાત્રે ઠંડુ પડે છે (~20°C).",
       questions: "પ્રશ્નો",
       questionsText: "કોઈપણ પ્રશ્નો માટે અમને કૉલ કરો અથવા મેસેજ કરો!",
-      ceremony: "લગ્ન સમારંભ",
-      ceremonyText: "અમે વિનંતી કરીએ છીએ કે તમે અમારા શનિવારના સમારંભમાં સમયસર પહોંચો જેથી ઉજવણીમાં વિક્ષેપ ન પડે. તે 4 વાગ્યે શરૂ થશે, પરંતુ મહેમાનો 3:30 વાગ્યાથી આવવાનું શરૂ કરી શકે છે.",
-      indianAttire: "ભારતીય પોશાક",
-      indianAttireText: "જો તમે ભારતીય પોશાક પહેરવા માંગતા હો અને ભારતીય કપડાંમાં મદદની જરૂર હોય તો અમારો સંપર્ક કરો. અમે અને અમારા કુટુંબના કેટલાક સભ્યો ભારતીય કપડાં પહેરીશું, જોકે તે જરૂરી નથી. અલોમીના દાદા-દાદી ભારતથી સાડી લાવ્યા છે, જેથી અમારી પાસે વધારાની સાડી છે જે અમે પ્રદાન કરી શકીએ છીએ અને જે સ્ત્રીઓ તે પહેરવા માંગે છે તેમને મદદ કરી શકીએ છીએ. કૃપા કરીને રંગ/શૈલી માટે અમારો સંપર્ક કરો જે તમે ઇચ્છો છો, અને અમે તમને નીચે પહેરી શકાય તેવા વિકલ્પો જણાવીશું.",
-      kidsFAQ: "જોકે અમને તમારા બાળકો ખૂબ પ્રિય છે, પરંતુ અમે અમારા લગ્ન અને સંબંધિત કાર્યક્રમો માત્ર પુખ્ત વયના લોકો માટે રાખવાનું નક્કી કર્યું છે. અમે આશા રાખીએ છીએ કે આ અગાઉની જાણકારીનો અર્થ એ છે કે તમે હજુ પણ અમારી સાથે જોડાઈ શકશો અને ઉજવણીના રાત્રિનો આનંદ લઈ શકશો!"
+      registry: "રજિસ્ટ્રી",
+      registryText: "અમે રજિસ્ટ્રી બનાવી નથી - તમારી હાજરી ખરેખર એકમાત્ર ભેટ છે જે અમને જોઈએ છે!",
+      kidsFAQ: "અમે તમારા બાળકોને ખૂબ પ્રેમ કરીએ છીએ, પરંતુ જગ્યા અંગેના મર્યાદાને કારણે, અમે વિનમ્રતાપૂર્વક વિનંતી કરીએ છીએ કે કૃપા કરીને માત્ર પ્રૌઢો જ હાજર રહે. જો આ કારણે તમને હાજર રહેવું મુશ્કેલ થાય, તો અમારો સંપર્ક કરો!"
     }
   },
   photos: {
@@ -390,6 +394,43 @@ const content = {
     gu: {
       basic: "Uber/Lyft ઉપલબ્ધ છે",
       shuttle: "Uber/Lyft ઉપલબ્ધ છે. રાત્રે 9 વાગ્યા થી, અમે અમારા બ્લોક કરેલા હોટેલોમાં પાછા જવા માટે શટલની વ્યવસ્થા પણ કરી છે."
+    }
+  },
+  ceremony: {
+    en: {
+      title: "Ceremony",
+      startTime: "Begins at 4:00pm. Guests may arrive at Villa di Rocca beginning at 3:30pm.",
+      venue: "Villa di Rocca",
+      address: "25255 Agoura Road, Agoura Hills, CA 91301",
+      map: "https://www.google.com/maps/search/?api=1&query=Villa+di+Rocca"
+    },
+    pl: {
+      title: "Ceremonia",
+      startTime: "Rozpoczyna się o 16:00. Goście mogą przybywać do Villa di Rocca od 15:30.",
+      venue: "Villa di Rocca",
+      address: "25255 Agoura Road, Agoura Hills, CA 91301",
+      map: "https://www.google.com/maps/search/?api=1&query=Villa+di+Rocca"
+    },
+    gu: {
+      title: "વિધિ",
+      startTime: "સામારંભ સાંજે 4:00 વાગ્યે શરૂ થશે. મહેમાનો 3:30 વાગ્યા પછી વિલા દિ રોકા પર પહોંચી શકે છે.",
+      venue: "વિલા દિ રોકા",
+      address: "25255 અગોરા રોકા, અગોરા હિલ્સ, કા 91301",
+      map: "https://www.google.com/maps/search/?api=1&query=Villa+di+Rocca"
+    }
+  },
+  indianAttire: {
+    en: {
+      title: "Indian Attire",
+      text: "Contact us if you are interested in wearing Indian attire and would like help with Indian clothes!"
+    },
+    pl: {
+      title: "Stroje Indyjskie",
+      text: "Skontaktuj się z nami, jeśli jesteś zainteresowany założeniem indyjskiego stroju i chciałbyś uzyskać pomoc w wyborze ubrań!"
+      },
+    gu: {
+      title: "ભારતીય પોશાક",
+      text: "જો તમે ભારતીય પરિધાન પહેરવામાં રસ ધરાવતા હોવ અને ભારતીય કપડાં માટે મદદ મેળવવા ઈચ્છતા હોવ તો કૃપા કરીને અમારો સંપર્ક કરો!"
     }
   }
 };
@@ -684,6 +725,8 @@ async function navigate(route){
   }
 
   // Update current route
+  const isNewRoute = currentRoute !== route;
+  previousRoute = currentRoute;
   currentRoute = route;
   
   // Update navigation
@@ -697,11 +740,13 @@ async function navigate(route){
   
   await routes[route].render(currentUser);
 
-  // Scroll to top after rendering the new page
-  window.scrollTo({
-    top: 0,
-    behavior: 'instant' // Use 'instant' instead of 'smooth' to prevent animation issues
-  });
+  // Scroll to top only if navigating to a new route
+  if (isNewRoute) {
+    window.scrollTo({
+      top: 0,
+      behavior: 'instant' // Use 'instant' instead of 'smooth' to prevent animation issues
+    });
+  }
 }
 
 // --- 5. Page Renderers ---
@@ -816,6 +861,8 @@ async function renderSchedule(user) {
       else if (ev.attire === "Formal") attireText = getContent('attire', 'formal');
       else if (ev.attire === "Casual") attireText = getContent('attire', 'casual');
 
+      if (ev.indianAttire) attireText += ". " + getContent('indianAttire', 'text');
+
       let parkingText = ev.parking;
       if (ev.parking === "Free Valet Available") parkingText = getContent('parking', 'valet');
 
@@ -823,6 +870,8 @@ async function renderSchedule(user) {
       if (ev.transport === "Uber/Lyft are available") transportText = getContent('transport', 'basic');
       else if (ev.transport === "Uber/Lyft are available. Starting at 9pm, we have also arranged for a shuttle back to our blocked hotels.") 
         transportText = getContent('transport', 'shuttle');
+
+      let ceremonyText = ev.ceremony ? getContent('ceremony', 'startTime') : '';
 
       html += `
         <div class="event-card">
@@ -877,6 +926,15 @@ async function renderSchedule(user) {
                 </div>
               </div>
             ` : ''}
+
+            ${ceremonyText ? `
+              <div class="event-ceremony">
+                <i class="fas fa-ring"></i>
+                <div class="ceremony-details">
+                  <strong>${getContent('ceremony', 'title')}:</strong> ${ceremonyText}
+                </div>
+              </div>
+            ` : ''}
           </div>
         </div>
       `;
@@ -902,13 +960,15 @@ async function renderTravel(){
         </div>
         <div class="section-content">
           <div class="location-card">
-            <div class="location-icon">
-              <i class="fas fa-plane-arrival"></i>
+            <div class="card-header">
+              <div class="location-icon">
+                <i class="fas fa-plane-arrival"></i>
+              </div>
+              <div class="location-details">
+                <h3>LAX</h3>
+              </div>
             </div>
-            <div class="location-details">
-              <h3>LAX</h3>
-              <p>${getContent('travel', 'laxInfo')}</p>
-            </div>
+            <p>${getContent('travel', 'laxInfo')}</p>
           </div>
         </div>
       </div>
@@ -920,46 +980,52 @@ async function renderTravel(){
         </div>
         <div class="section-content">
           <div class="hotel-card">
-            <div class="hotel-icon">
-              <i class="fas fa-building"></i>
+            <div class="card-header">
+              <div class="hotel-icon">
+                <i class="fas fa-building"></i>
+              </div>
+              <div class="hotel-details">
+                <h3>Hampton Inn & Suites Agoura Hills</h3>
+              </div>
             </div>
-            <div class="hotel-details">
-              <h3>Hampton Inn & Suites Agoura Hills</h3>
-              <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301</p>
-              <p class="hotel-code">${getContent('travel', 'groupCode')}: <strong>PSW</strong></p>
-              <a href="https://www.hilton.com/en/hotels/agocahx-hampton-suites-agoura-hills/" 
-                 target="_blank" class="hotel-link">
-                ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
-              </a>
-            </div>
+            <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301</p>
+            <p class="hotel-code">${getContent('travel', 'groupCode')}: <strong>PSW</strong></p>
+            <a href="https://www.hilton.com/en/hotels/agocahx-hampton-suites-agoura-hills/" 
+               target="_blank" class="hotel-link">
+              ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
+            </a>
           </div>
 
           <div class="hotel-card">
-            <div class="hotel-icon">
-              <i class="fas fa-building"></i>
+            <div class="card-header">
+              <div class="hotel-icon">
+                <i class="fas fa-building"></i>
+              </div>
+              <div class="hotel-details">
+                <h3>Courtyard Thousand Oaks Agoura Hills</h3>
+              </div>
             </div>
-            <div class="hotel-details">
-              <h3>Courtyard Thousand Oaks Agoura Hills</h3>
-              <p class="hotel-address">29505 Agoura Road, Agoura Hills, CA 91301</p>
-              <a href="https://www.marriott.com/event-reservations/reservation-link.mi?id=1732310675274&key=GRP&guestreslink2=true&app=resvlink" 
-                 target="_blank" class="hotel-link">
-                ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
-              </a>
-            </div>
+            <p class="hotel-address">29505 Agoura Road, Agoura Hills, CA 91301</p>
+            <a href="https://www.marriott.com/event-reservations/reservation-link.mi?id=1732310675274&key=GRP&guestreslink2=true&app=resvlink" 
+               target="_blank" class="hotel-link">
+              ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
+            </a>
           </div>
 
           <div class="hotel-card">
-            <div class="hotel-icon">
-              <i class="fas fa-search-location"></i>
+            <div class="card-header">
+              <div class="hotel-icon">
+                <i class="fas fa-search-location"></i>
+              </div>
+              <div class="hotel-details">
+                <h3>${getContent('travel', 'otherHotels')}</h3>
+              </div>
             </div>
-            <div class="hotel-details">
-              <h3>${getContent('travel', 'otherHotels')}</h3>
-              <p>${getContent('travel', 'otherHotelsDesc')}</p>
-              <a href="https://www.google.com/travel/search?q=hotels%20agoura%20hills&g2lb=4965990%2C4969803%2C72277293%2C72302247%2C72317059%2C72414906%2C72471280%2C72472051%2C72481459%2C72485658%2C72560029%2C72573224%2C72616120%2C72647020%2C72648289%2C72686036%2C72760082%2C72803964%2C72832976%2C72882230%2C72885032%2C72946003%2C72948010%2C72958594%2C72958624%2C72959983%2C72969407%2C72969663&hl=en-US&gl=us&ssta=1&ts=CAESCgoCCAMKAggDEAAafwphEjUyJTB4ODBlODIxMWUyM2FhMWM5NToweGFjMGVmNmFlMmRkZmZkZDY6DEFnb3VyYSBIaWxscxooChIJAJGQBJMHQUARpC69N1O4XcASEgnZBVkKhh1BQBGkLr1ncKddwBIaEhQKBwjpDxAJGAwSBwjpDxAJGA4YAjICCAEqBwoFOgNVU0Q&qs=CAE4BlpPCAEyS6oBSBABKgoiBmhvdGVscygAMh8QASIbkVoVClkeODeSTmJsydXSgEbugwLIWAf8D7ziMhcQAiITaG90ZWxzIGFnb3VyYSBoaWxscw&ap=KigKEgkAkZAEkwdBQBGkLr03U7hdwBISCdkFWQqGHUFAEaQuvWdwp13AMAJoAQ&ictx=111&ved=0CAAQ5JsGahcKEwiIgPr_p7ONAxUAAAAAHQAAAAAQBg" 
-                 target="_blank" class="hotel-link">
-                ${getContent('travel', 'searchHotels')} <i class="fas fa-external-link-alt"></i>
-              </a>
-            </div>
+            <p>${getContent('travel', 'otherHotelsDesc')}</p>
+            <a href="https://www.google.com/travel/search?q=hotels%20agoura%20hills&g2lb=4965990%2C4969803%2C72277293%2C72302247%2C72317059%2C72414906%2C72471280%2C72472051%2C72481459%2C72485658%2C72560029%2C72573224%2C72616120%2C72647020%2C72648289%2C72686036%2C72760082%2C72803964%2C72832976%2C72882230%2C72885032%2C72946003%2C72948010%2C72958594%2C72958624%2C72959983%2C72969407%2C72969663&hl=en-US&gl=us&ssta=1&ts=CAESCgoCCAMKAggDEAAafwphEjUyJTB4ODBlODIxMWUyM2FhMWM5NToweGFjMGVmNmFlMmRkZmZkZDY6DEFnb3VyYSBIaWxscxooChIJAJGQBJMHQUARpC69N1O4XcASEgnZBVkKhh1BQBGkLr1ncKddwBIaEhQKBwjpDxAJGAwSBwjpDxAJGA4YAjICCAEqBwoFOgNVU0Q&qs=CAE4BlpPCAEyS6oBSBABKgoiBmhvdGVscygAMh8QASIbkVoVClkeODeSTmJsydXSgEbugwLIWAf8D7ziMhcQAiITaG90ZWxzIGFnb3VyYSBoaWxscw&ap=KigKEgkAkZAEkwdBQBGkLr03U7hdwBISCdkFWQqGHUFAEaQuvWdwp13AMAJoAQ&ictx=111&ved=0CAAQ5JsGahcKEwiIgPr_p7ONAxUAAAAAHQAAAAAQBg" 
+               target="_blank" class="hotel-link">
+              ${getContent('travel', 'searchHotels')} <i class="fas fa-external-link-alt"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -971,31 +1037,35 @@ async function renderTravel(){
         </div>
         <div class="section-content">
           <div class="hotel-card">
-            <div class="hotel-icon">
-              <i class="fas fa-home"></i>
+            <div class="card-header">
+              <div class="hotel-icon">
+                <i class="fas fa-home"></i>
+              </div>
+              <div class="hotel-details">
+                <h3>${getContent('travel', 'airbnbTitle')}</h3>
+              </div>
             </div>
-            <div class="hotel-details">
-              <h3>${getContent('travel', 'airbnbTitle')}</h3>
-              <p>${getContent('travel', 'airbnbDesc')}</p>
-              <a href="https://www.airbnb.com/s/Agoura-Hills--CA/homes?refinement_paths%5B%5D=%2Fhomes&place_id=ChIJlRyqIx4h6IAR1v3fLa72Dqw&checkin=2025-09-12&checkout=2025-09-14&adults=2&query=Agoura%20Hills%2C%20CA&flexible_trip_lengths%5B%5D=one_week&monthly_start_date=2025-06-01&monthly_length=3&monthly_end_date=2025-09-01&search_mode=regular_search&price_filter_input_type=2&price_filter_num_nights=2&channel=EXPLORE&source=structured_search_input_header&search_type=user_map_move&ne_lat=34.25319394821856&ne_lng=-118.604458777741&sw_lat=34.040701434194176&sw_lng=-118.88559867452989&zoom=12.622464229316126&zoom_level=12.622464229316126&search_by_map=true" 
-                 target="_blank" class="hotel-link">
-                ${getContent('travel', 'searchAirbnb')} <i class="fas fa-external-link-alt"></i>
-              </a>
-            </div>
+            <p>${getContent('travel', 'airbnbDesc')}</p>
+            <a href="https://www.airbnb.com/s/Agoura-Hills--CA/homes?refinement_paths%5B%5D=%2Fhomes&place_id=ChIJlRyqIx4h6IAR1v3fLa72Dqw&checkin=2025-09-12&checkout=2025-09-14&adults=2&query=Agoura%20Hills%2C%20CA&flexible_trip_lengths%5B%5D=one_week&monthly_start_date=2025-06-01&monthly_length=3&monthly_end_date=2025-09-01&search_mode=regular_search&price_filter_input_type=2&price_filter_num_nights=2&channel=EXPLORE&source=structured_search_input_header&search_type=user_map_move&ne_lat=34.25319394821856&ne_lng=-118.604458777741&sw_lat=34.040701434194176&sw_lng=-118.88559867452989&zoom=12.622464229316126&zoom_level=12.622464229316126&search_by_map=true" 
+               target="_blank" class="hotel-link">
+              ${getContent('travel', 'searchAirbnb')} <i class="fas fa-external-link-alt"></i>
+            </a>
           </div>
 
           <div class="hotel-card">
-            <div class="hotel-icon">
-              <i class="fas fa-hotel"></i>
+            <div class="card-header">
+              <div class="hotel-icon">
+                <i class="fas fa-hotel"></i>
+              </div>
+              <div class="hotel-details">
+                <h3>${getContent('travel', 'bookingTitle')}</h3>
+              </div>
             </div>
-            <div class="hotel-details">
-              <h3>${getContent('travel', 'bookingTitle')}</h3>
-              <p>${getContent('travel', 'bookingDesc')}</p>
-              <a href="https://www.booking.com/searchresults.html?ss=Agoura+Hills&ssne=Agoura+Hills&ssne_untouched=Agoura+Hills&efdco=1&label=gog235jc-1DCAMo7AFCDGFnb3VyYS1oaWxsc0gzWANoiQKIAQGYATG4ARfIAQzYAQPoAQH4AQKIAgGoAgO4AqK_tMEGwAIB0gIkMTg2M2VlOWQtMTY2Ny00MjY5LThmYzktMTMyNGM5M2JhZTQ52AIE4AIB&aid=356980&lang=en-us&sb=1&src_elem=sb&src=city&dest_id=20011229&dest_type=city&checkin=2025-09-12&checkout=2025-09-14&group_adults=2&no_rooms=1&group_children=0&sb_travel_purpose=leisure&sb_lp=1#map_opened" 
-                 target="_blank" class="hotel-link">
-                ${getContent('travel', 'searchBooking')} <i class="fas fa-external-link-alt"></i>
-              </a>
-            </div>
+            <p>${getContent('travel', 'bookingDesc')}</p>
+            <a href="https://www.booking.com/searchresults.html?ss=Agoura+Hills&ssne=Agoura+Hills&ssne_untouched=Agoura+Hills&efdco=1&label=gog235jc-1DCAMo7AFCDGFnb3VyYS1oaWxsc0gzWANoiQKIAQGYATG4ARfIAQzYAQPoAQH4AQKIAgGoAgO4AqK_tMEGwAIB0gIkMTg2M2VlOWQtMTY2Ny00MjY5LThmYzktMTMyNGM5M2JhZTQ52AIE4AIB&aid=356980&lang=en-us&sb=1&src_elem=sb&src=city&dest_id=20011229&dest_type=city&checkin=2025-09-12&checkout=2025-09-14&group_adults=2&no_rooms=1&group_children=0&sb_travel_purpose=leisure&sb_lp=1#map_opened" 
+               target="_blank" class="hotel-link">
+              ${getContent('travel', 'searchBooking')} <i class="fas fa-external-link-alt"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -1178,30 +1248,12 @@ async function renderDetails()  {
         </div>
       </div>
 
-      ${currentUser.kidsFAQ ? `
       <div class="details-section">
-        <h2><i class="fas fa-child"></i> Kids</h2>
+        <h2><i class="fas fa-gift"></i> ${getContent('details', 'registry')}</h2>
         <div class="details-card">
-          <p>${getContent('details', 'kidsFAQ')}</p>
+          <p>${getContent('details', 'registryText')}</p>
         </div>
       </div>
-      ` : ''}
-
-      <div class="details-section">
-        <h2><i class="fas fa-ring"></i> ${getContent('details', 'ceremony')}</h2>
-        <div class="details-card">
-          <p>${getContent('details', 'ceremonyText')}</p>
-        </div>
-      </div>
-
-      ${currentUser.invitedWelcomeParty ? `
-      <div class="details-section">
-        <h2><i class="fas fa-tshirt"></i> ${getContent('details', 'indianAttire')}</h2>
-        <div class="details-card">
-          <p>${getContent('details', 'indianAttireText')}</p>
-        </div>
-      </div>
-      ` : ''}
 
       <div class="details-section">
         <h2><i class="fas fa-map-marked-alt"></i> ${getContent('details', 'location')}</h2>
@@ -1216,6 +1268,15 @@ async function renderDetails()  {
           <p>${getContent('details', 'weatherText')}</p>
         </div>
       </div>
+
+      ${currentUser.kidsFAQ ? `
+      <div class="details-section">
+        <h2><i class="fas fa-child"></i> Kids</h2>
+        <div class="details-card">
+          <p>${getContent('details', 'kidsFAQ')}</p>
+        </div>
+      </div>
+      ` : ''}
 
       <div class="details-section">
         <h2><i class="fas fa-question-circle"></i> ${getContent('details', 'questions')}</h2>
@@ -1677,35 +1738,39 @@ async function renderRSVP(user){
   };
 }
 
-// Add pagination constants
-const USERS_PER_PAGE = 20;
-let currentPage = 1;
+// Remove pagination constants
+// const USERS_PER_PAGE = 20;
+// let currentPage = 1;
 
 async function renderAdmin(user) {
   try {
-    // Fetch only necessary fields with pagination
+    // Fetch all users
     const userSnap = await getDocs(query(
       collection(db, "users"),
-      limit(USERS_PER_PAGE),
-      startAfter((currentPage - 1) * USERS_PER_PAGE)
+      orderBy("groupId")
     ));
 
     // Get events from cache
     const events = await cache.getEvents();
 
-    // Fetch RSVPs only for visible users
+    // Fetch RSVPs for all users in batches of 30
     const userIds = userSnap.docs.map(doc => doc.id);
-    const rsvpSnap = await getDocs(query(
-      collection(db, "rsvps"),
-      where("userId", "in", userIds)
-    ));
-
     const rsvps = {};
-    rsvpSnap.docs.forEach(doc => {
-      const { userId, eventId, attending } = doc.data();
-      if (!rsvps[userId]) rsvps[userId] = {};
-      rsvps[userId][eventId] = attending;
-    });
+    
+    // Split userIds into chunks of 30
+    for (let i = 0; i < userIds.length; i += 30) {
+      const chunk = userIds.slice(i, i + 30);
+      const rsvpSnap = await getDocs(query(
+        collection(db, "rsvps"),
+        where("userId", "in", chunk)
+      ));
+      
+      rsvpSnap.docs.forEach(doc => {
+        const { userId, eventId, attending } = doc.data();
+        if (!rsvps[userId]) rsvps[userId] = {};
+        rsvps[userId][eventId] = attending;
+      });
+    }
 
     // Build the admin view
     let html = `
@@ -1717,15 +1782,6 @@ async function renderAdmin(user) {
             <i class="fas fa-user-plus"></i> Add New User
           </button>
           <button id="clearFilters" class="admin-button">Clear Filters</button>
-          <div class="pagination-controls">
-            <button id="prevPage" class="admin-button" ${currentPage === 1 ? 'disabled' : ''}>
-              <i class="fas fa-chevron-left"></i> Previous
-            </button>
-            <span>Page ${currentPage}</span>
-            <button id="nextPage" class="admin-button" ${userSnap.docs.length < USERS_PER_PAGE ? 'disabled' : ''}>
-              Next <i class="fas fa-chevron-right"></i>
-            </button>
-          </div>
         </div>
 
         <div class="table-container">
@@ -1877,21 +1933,6 @@ async function renderAdmin(user) {
     `;
 
     document.getElementById("app").innerHTML = html.trim();
-
-    // Add pagination event listeners
-    document.getElementById('prevPage').addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderAdmin(user);
-      }
-    });
-
-    document.getElementById('nextPage').addEventListener('click', () => {
-      if (userSnap.docs.length === USERS_PER_PAGE) {
-        currentPage++;
-        renderAdmin(user);
-      }
-    });
 
     // Add event listeners for sorting
     document.querySelectorAll('th[data-sort]').forEach(th => {

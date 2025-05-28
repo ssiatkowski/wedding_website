@@ -935,105 +935,164 @@ input[type="checkbox"] {
 }
 
 .travel-section {
+  margin-bottom: 2rem;
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  margin-bottom: var(--spacing-lg);
-  overflow: hidden;
-  animation: fadeInUp 1s ease;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .section-header {
-  background: linear-gradient(45deg, var(--primary), var(--accent-dark));
-  color: white;
-  padding: var(--spacing-lg);
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(45deg, var(--primary), var(--accent-dark));
+  border-radius: 8px;
+  color: white;
 }
 
 .section-header i {
-  font-size: 1.8rem;
+  font-size: 2rem;
+  color: white;
 }
 
 .section-header h2 {
-  margin: 0;
   font-size: 1.8rem;
+  margin: 0;
+  color: white;
 }
 
 .section-content {
-  padding: var(--spacing-lg);
+  display: grid;
+  gap: 1.5rem;
 }
 
 .location-card,
 .hotel-card {
   display: flex;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-lg);
-  background: var(--bg);
-  border-radius: 15px;
-  margin-bottom: var(--spacing-md);
-  transition: transform 0.3s ease;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
 }
 
 .location-card:hover,
 .hotel-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
 .location-icon,
 .hotel-icon {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(45deg, var(--primary), var(--accent));
-  border-radius: 50%;
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(45deg, var(--accent), var(--accent-light));
+  border-radius: 50%;
   color: white;
-  font-size: 1.8rem;
-  flex-shrink: 0;
+  font-size: 1.5rem;
 }
 
-.location-details, .hotel-details {
-  flex-grow: 1;
+.location-details,
+.hotel-details {
+  flex: 1;
 }
 
-.location-details h3, .hotel-details h3 {
-  margin: 0 0 0.5rem 0;
-  color: var(--primary);
+.location-details h3,
+.hotel-details h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--text-color);
 }
 
 .hotel-address {
-  color: #666;
   margin: 0.5rem 0;
+  color: var(--text-secondary);
 }
 
 .hotel-code {
-  margin: 0.5rem 0;
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--accent-color);
+  color: white;
+  border-radius: 4px;
   font-size: 0.9rem;
+  margin-bottom: 0.5rem;
 }
 
 .hotel-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(45deg, var(--primary), var(--accent));
+  padding: 0.5rem 1rem;
+  background: linear-gradient(45deg, var(--accent), var(--accent-light));
   color: white;
-  padding: 1rem 2rem;
-  border-radius: 8px;
   text-decoration: none;
-  margin-top: var(--spacing-md);
-  transition: transform 0.3s ease;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
 }
 
 .hotel-link:hover {
   transform: translateY(-2px);
-  background: linear-gradient(45deg, var(--primary-dark), var(--accent-dark));
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .hotel-link i {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .travel-section {
+    padding: 1rem;
+  }
+
+  .section-header {
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .section-header i {
+    font-size: 1.5rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .location-card,
+  .hotel-card {
+    padding: 1rem;
+  }
+
+  .card-header {
+    gap: 1rem;
+  }
+
+  .location-icon,
+  .hotel-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  .location-details h3,
+  .hotel-details h3 {
+    font-size: 1.2rem;
+  }
 }
 
 /* Language Selector Styles */
@@ -2065,7 +2124,8 @@ input::-webkit-outer-spin-button {
 .event-description,
 .event-attire,
 .event-parking,
-.event-transport {
+.event-transport,
+.event-ceremony {
   display: flex;
   align-items: flex-start;
   margin-bottom: var(--spacing-md);
@@ -2078,7 +2138,8 @@ input::-webkit-outer-spin-button {
 .event-description i,
 .event-attire i,
 .event-parking i,
-.event-transport i {
+.event-transport i,
+.event-ceremony i {
   color: var(--accent);
   margin-right: var(--spacing-sm);
   margin-top: 0.25rem;
@@ -2122,5 +2183,31 @@ input::-webkit-outer-spin-button {
 
   .event-card {
     width: 100%;
+  }
+}
+
+.section-description {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.section-description p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .section-description {
+    margin-top: 1rem;
+    padding: 0.75rem;
+  }
+
+  .section-description p {
+    font-size: 1rem;
   }
 }
