@@ -1115,6 +1115,15 @@ async function renderDetails()  {
         </div>
       </div>
 
+      ${currentUser.kidsFAQ ? `
+      <div class="details-section">
+        <h2><i class="fas fa-child"></i> Kids</h2>
+        <div class="details-card">
+          <p>While we love your children, we have decided to keep our wedding and related events adults-only. We hope this advance notice means you can still join us and enjoy a night of celebration!</p>
+        </div>
+      </div>
+      ` : ''}
+
       <div class="details-section">
         <h2><i class="fas fa-map-marked-alt"></i> ${getContent('details', 'location')}</h2>
         <div class="details-card">
@@ -1376,7 +1385,7 @@ async function renderRSVP(user){
       <h1>${getContent('rsvp', 'title')}: ${user.groupId}</h1>
       <div class="rsvp-instructions">
         <p>${getContent('rsvp', 'instructions')}</p>
-        ${members.length === 1 ? `<p>${getContent('rsvp', 'plusOneInstructions')}</p>` : ''}
+        ${user.plusOneAllowed ? `<p>${getContent('rsvp', 'plusOneInstructions')}</p>` : ''}
       </div>
       <table class="rsvp-table">
         <thead>
@@ -1389,7 +1398,7 @@ async function renderRSVP(user){
   );
   
   invitedEvents.forEach(ev=> html+=`<th>${ev.title}</th>`);
-  html += `<th>${getContent('rsvp', 'allergies')}</th></tr></thead><tbody>`;
+  html += `<th>${getContent('rsvp', 'allergies')} / Dietary Restrictions</th></tr></thead><tbody>`;
 
   members.forEach(m=>{
     html += `<tr><td>${m.firstName} ${m.lastName}</td>`;
@@ -1404,19 +1413,22 @@ async function renderRSVP(user){
       }
     });
     // Add allergies input field
-    html += `<td data-label="${getContent('rsvp', 'allergies')}"><input type="text" class="allergies-input" 
+    html += `<td data-label="${getContent('rsvp', 'allergies')} / Dietary Restrictions"><input type="text" class="allergies-input" 
               data-uid="${m.uid}" 
               value="${m.allergies || ''}" 
-              placeholder="${getContent('rsvp', 'allergiesPlaceholder')}"></td>`;
+              placeholder="${getContent('rsvp', 'allergiesPlaceholder')}"
+              style="width: 90%;"></td>`;
     html += "</tr>";
   });
 
-  // Add +1 row if user is alone in their group
-  if (members.length === 1) {
+  // Add +1 row if user has plusOneAllowed
+  if (user.plusOneAllowed) {
     html += `<tr class="plus-one-row">
       <td>
-        <input type="text" id="plusOneFirstName" placeholder="${getContent('rsvp', 'firstNamePlaceholder')}" class="plus-one-name">
-        <input type="text" id="plusOneLastName" placeholder="${getContent('rsvp', 'lastNamePlaceholder')}" class="plus-one-name">
+        <div class="plus-one-name-container">
+          <input type="text" id="plusOneFirstName" placeholder="${getContent('rsvp', 'firstNamePlaceholder')}" class="plus-one-name" maxlength="30">
+          <input type="text" id="plusOneLastName" placeholder="${getContent('rsvp', 'lastNamePlaceholder')}" class="plus-one-name" maxlength="30">
+        </div>
       </td>`;
     
     invitedEvents.forEach(ev => {
@@ -1425,8 +1437,8 @@ async function renderRSVP(user){
       </td>`;
     });
     
-    html += `<td data-label="${getContent('rsvp', 'allergies')}">
-      <input type="text" id="plusOneAllergies" class="allergies-input" placeholder="${getContent('rsvp', 'allergiesPlaceholder')}">
+    html += `<td data-label="${getContent('rsvp', 'allergies')} / Dietary Restrictions">
+      <input type="text" id="plusOneAllergies" class="allergies-input" placeholder="${getContent('rsvp', 'allergiesPlaceholder')}" style="width: 90%;">
     </td></tr>`;
   }
 
@@ -1592,10 +1604,7 @@ async function renderAdmin(user) {
           <button id="addUserBtn" class="admin-button">
             <i class="fas fa-user-plus"></i> Add New User
           </button>
-          <div class="search-filters">
-            <input type="text" id="searchInput" placeholder="Search guests..." class="admin-search">
-            <button id="clearFilters" class="admin-button">Clear Filters</button>
-          </div>
+          <button id="clearFilters" class="admin-button">Clear Filters</button>
         </div>
 
         <div class="table-container">
@@ -1605,14 +1614,16 @@ async function renderAdmin(user) {
                 <th data-sort="groupId">Group <i class="fas fa-sort"></i></th>
                 <th data-sort="name">Guest <i class="fas fa-sort"></i></th>
                 <th data-sort="hasRSVPed">Has RSVPed <i class="fas fa-sort"></i></th>
-                <th data-sort="isPlusOne">+1 <i class="fas fa-sort"></i></th>
+                <th data-sort="isPlusOne">Is +1 <i class="fas fa-sort"></i></th>
+                <th data-sort="plusOneAllowed">Has +1 <i class="fas fa-sort"></i></th>
+                <th data-sort="kidsFAQ">Kids FAQ <i class="fas fa-sort"></i></th>
                 <th data-sort="invitedChurch">Church <i class="fas fa-sort"></i></th>
                 <th data-sort="invitedWelcomeParty">Welcome Party <i class="fas fa-sort"></i></th>
                 <th data-sort="invitedMainWedding">Wedding <i class="fas fa-sort"></i></th>
                 <th data-sort="invitedSundayBrunchEarly">Brunch (Early) <i class="fas fa-sort"></i></th>
                 <th data-sort="invitedSundayBrunchLate">Brunch (Late) <i class="fas fa-sort"></i></th>
                 <th data-sort="allergies">Allergies <i class="fas fa-sort"></i></th>
-                <th>Actions</th>
+                <th data-sort="actions">Actions <i class="fas fa-sort"></i></th>
               </tr>
               <tr id="filterRow">
                 <th><input type="text" placeholder="Filter group..." data-filter="groupId"></th>
@@ -1626,6 +1637,20 @@ async function renderAdmin(user) {
                 </th>
                 <th>
                   <select data-filter="isPlusOne">
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="plusOneAllowed">
+                    <option value="">All</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                  </select>
+                </th>
+                <th>
+                  <select data-filter="kidsFAQ">
                     <option value="">All</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -1709,6 +1734,12 @@ async function renderAdmin(user) {
                   <td>${user.firstName} ${user.lastName}</td>
                   <td>${user.hasRSVPed ? '✔' : '✖'}</td>
                   <td>${user.isPlusOne ? '✔' : ''}</td>
+                  <td>
+                    <input type="checkbox" class="plus-one-allowed" ${user.plusOneAllowed ? 'checked' : ''}>
+                  </td>
+                  <td>
+                    <input type="checkbox" class="kids-faq" ${user.kidsFAQ ? 'checked' : ''}>
+                  </td>
                   ${eventCells}
                   <td>${user.allergies||''}</td>
                   <td>
@@ -1781,6 +1812,44 @@ async function renderAdmin(user) {
         const checked = e.target.checked;
         
         await updateUserEvent(userId, event, checked);
+      });
+    });
+
+    // Add event listeners for plusOneAllowed checkboxes
+    document.querySelectorAll('.plus-one-allowed').forEach(checkbox => {
+      checkbox.addEventListener('change', async (e) => {
+        const userId = e.target.closest('tr').dataset.userId;
+        const checked = e.target.checked;
+        
+        try {
+          await setDoc(doc(db, "users", userId), {
+            plusOneAllowed: checked
+          }, { merge: true });
+        } catch (error) {
+          console.error("Error updating plusOneAllowed:", error);
+          alert("Error updating plusOneAllowed. Please try again.");
+          // Revert checkbox state
+          e.target.checked = !checked;
+        }
+      });
+    });
+
+    // Add event listeners for kidsFAQ checkboxes
+    document.querySelectorAll('.kids-faq').forEach(checkbox => {
+      checkbox.addEventListener('change', async (e) => {
+        const userId = e.target.closest('tr').dataset.userId;
+        const checked = e.target.checked;
+        
+        try {
+          await setDoc(doc(db, "users", userId), {
+            kidsFAQ: checked
+          }, { merge: true });
+        } catch (error) {
+          console.error("Error updating kidsFAQ:", error);
+          alert("Error updating kidsFAQ. Please try again.");
+          // Revert checkbox state
+          e.target.checked = !checked;
+        }
       });
     });
 
@@ -1909,6 +1978,12 @@ function showAddUserModal() {
           <label>Allergies:</label>
           <input type="text" name="allergies">
         </div>
+        <div class="form-group">
+          <label>
+            <input type="checkbox" name="plusOneAllowed">
+            Allow +1
+          </label>
+        </div>
         <div class="event-checkboxes">
           <h3>Invited Events:</h3>
           <label><input type="checkbox" name="invitedChurch"> Church</label>
@@ -1942,8 +2017,8 @@ function showAddUserModal() {
 
     // Convert checkbox values to booleans
     ['invitedChurch', 'invitedWelcomeParty', 'invitedMainWedding', 
-     'invitedSundayBrunchEarly', 'invitedSundayBrunchLate'].forEach(event => {
-      userData[event] = formData.get(event) === 'on';
+     'invitedSundayBrunchEarly', 'invitedSundayBrunchLate', 'plusOneAllowed'].forEach(field => {
+      userData[field] = formData.get(field) === 'on';
     });
     
     try {
@@ -2037,6 +2112,16 @@ function filterTable() {
           const plusOneCell = row.cells[3];
           const isPlusOne = plusOneCell.textContent.trim() === '✔';
           if ((value === 'true' && !isPlusOne) || (value === 'false' && isPlusOne)) show = false;
+          break;
+        case 'plusOneAllowed':
+          const plusOneAllowedCell = row.cells[4];
+          const plusOneAllowed = plusOneAllowedCell.querySelector('input[type="checkbox"]').checked;
+          if ((value === 'true' && !plusOneAllowed) || (value === 'false' && plusOneAllowed)) show = false;
+          break;
+        case 'kidsFAQ':
+          const kidsFAQCell = row.cells[5];
+          const kidsFAQ = kidsFAQCell.querySelector('input[type="checkbox"]').checked;
+          if ((value === 'true' && !kidsFAQ) || (value === 'false' && kidsFAQ)) show = false;
           break;
         case 'allergies':
           const allergiesCell = row.cells[row.cells.length - 2];

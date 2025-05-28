@@ -607,7 +607,7 @@ input[type="checkbox"] {
 
 .admin-dashboard {
   padding: var(--spacing-lg);
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -683,44 +683,35 @@ input[type="checkbox"] {
 
 /* Column widths */
 .admin-table th:nth-child(1), /* Group */
-.admin-table td:nth-child(1) {
-  width: 8%;
-}
-
 .admin-table th:nth-child(2), /* Guest */
-.admin-table td:nth-child(2) {
-  width: 15%;
-}
-
 .admin-table th:nth-child(3), /* Has RSVPed */
-.admin-table td:nth-child(3),
-.admin-table th:nth-child(4), /* +1 */
-.admin-table td:nth-child(4) {
-  width: 6%;
+.admin-table th:nth-child(4), /* Is +1 */
+.admin-table th:nth-child(5), /* Has +1 */
+.admin-table th:nth-child(6), /* Kids FAQ */
+.admin-table th:nth-child(7), /* Church */
+.admin-table th:nth-child(8), /* Welcome Party */
+.admin-table th:nth-child(9), /* Wedding */
+.admin-table th:nth-child(10), /* Brunch Early */
+.admin-table th:nth-child(11), /* Brunch Late */
+.admin-table th:nth-child(12), /* Allergies */
+.admin-table th:nth-child(13) { /* Actions */
+  width: auto;
+  min-width: 80px;
 }
 
-.admin-table th:nth-child(5), /* Events */
-.admin-table td:nth-child(5),
-.admin-table th:nth-child(6),
-.admin-table td:nth-child(6),
-.admin-table th:nth-child(7),
-.admin-table td:nth-child(7),
-.admin-table th:nth-child(8),
-.admin-table td:nth-child(8),
-.admin-table th:nth-child(9),
-.admin-table td:nth-child(9) {
-  width: 9%;
-}
-
-.admin-table th:nth-child(10), /* Allergies */
-.admin-table td:nth-child(10) {
-  width: 15%;
-}
-
-.admin-table th:nth-child(11), /* Actions */
-.admin-table td:nth-child(11) {
-  width: 8%;
-}
+.admin-table th:nth-child(1) { width: 200px; } /* Group */
+.admin-table th:nth-child(2) { width: 120px; } /* Guest */
+.admin-table th:nth-child(3) { width: 70px; } /* Has RSVPed */
+.admin-table th:nth-child(4) { width: 70px; } /* Is +1 */
+.admin-table th:nth-child(5) { width: 70px; } /* Has +1 */
+.admin-table th:nth-child(6) { width: 70px; } /* Kids FAQ */
+.admin-table th:nth-child(7) { width: 90px; } /* Church */
+.admin-table th:nth-child(8) { width: 90px; } /* Welcome Party */
+.admin-table th:nth-child(9) { width: 90px; } /* Wedding */
+.admin-table th:nth-child(10) { width: 90px; } /* Brunch Early */
+.admin-table th:nth-child(11) { width: 90px; } /* Brunch Late */
+.admin-table th:nth-child(12) { width: 150px; } /* Allergies */
+.admin-table th:nth-child(13) { width: 70px; } /* Actions */
 
 .admin-table th[data-sort] {
   cursor: pointer;
