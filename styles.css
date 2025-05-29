@@ -1100,8 +1100,25 @@ input[type="checkbox"] {
 /* Language Selector Styles */
 .language-selector {
   display: flex;
-  gap: var(--spacing-xs);
+  flex-direction: column;
+  gap: 8px;
   z-index: 1001;
+}
+
+.language-label {
+  font-size: 13px;
+  color: white;
+  opacity: 0.8;
+}
+
+.language-label.login {
+  color: var(--primary);
+  opacity: 1;
+}
+
+.language-flags {
+  display: flex;
+  gap: var(--spacing-xs);
 }
 
 .language-flag {
@@ -1122,13 +1139,38 @@ input[type="checkbox"] {
   transform: scale(1.1);
 }
 
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--accent);
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  z-index: 1001;
+}
+
+.logout-button:hover {
+  background-color: var(--accent-hover);
+}
+
 /* Desktop Styles */
 @media (min-width: 769px) {
   .language-selector {
     position: absolute;
+    margin-top: -10px;
+    top: var(--spacing-sm);
+    left: var(--spacing-sm);
+    background: transparent;
+  }
+
+  .logout-button {
+    position: absolute;
     top: var(--spacing-sm);
     right: var(--spacing-sm);
-    background: transparent;
   }
 
   nav#main-nav {
@@ -1139,26 +1181,52 @@ input[type="checkbox"] {
 /* Mobile Styles */
 @media (max-width: 768px) {
   .language-selector {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.8);
+    margin: 0;
+  }
+
+  .language-label {
+    margin: 0;
+    text-align: left;
+    width: auto;
+  }
+
+  .language-flags {
+    margin-top: 8px;
+  }
+
+  .logout-button {
+    position: relative;
+    bottom: 65px;
+    left: 80%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 0.9em;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block;
+    height: auto;
+    width: auto;
+  }
+
+  /* Ensure navbar is above content */
+  nav#main-nav {
     position: fixed;
-    bottom: 0;
+    top: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
     z-index: 1000;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 20px));
   }
 
-  nav#main-nav {
-    margin-top: calc(32px + var(--spacing-xs) * 2);
-  }
-
-  #app {
-    padding-top: calc(var(--navbar-height) + 32px + var(--spacing-xs) * 2);
-  }
 }
 
 /* Floating Menu Button */
@@ -1284,25 +1352,6 @@ input[type="checkbox"] {
 /* Mobile Styles */
 @media (max-width: 768px) {
   .language-selector {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    z-index: 1000;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom, 20px));
-  }
-
-  .login-container {
-    padding-top: calc(32px + var(--spacing-xs) * 2);
-  }
-
-  /* Combined top bar */
-  .language-selector {
     position: static;
     background: var(--primary);
     padding: var(--spacing-sm);
@@ -1425,7 +1474,27 @@ input[type="checkbox"] {
   .photo-item:nth-child(18) { animation-delay: 1.8s; }
   .photo-item:nth-child(19) { animation-delay: 1.9s; }
   .photo-item:nth-child(20) { animation-delay: 2.0s; }
-  .photo-item:nth-child(n+21) { animation-delay: 2.1s; }
+  .photo-item:nth-child(21) { animation-delay: 2.1s; }
+  .photo-item:nth-child(22) { animation-delay: 2.2s; }
+  .photo-item:nth-child(23) { animation-delay: 2.3s; }
+  .photo-item:nth-child(24) { animation-delay: 2.4s; }
+  .photo-item:nth-child(25) { animation-delay: 2.5s; }
+  .photo-item:nth-child(26) { animation-delay: 2.6s; }
+  .photo-item:nth-child(27) { animation-delay: 2.7s; }
+  .photo-item:nth-child(28) { animation-delay: 2.8s; }
+  .photo-item:nth-child(29) { animation-delay: 2.9s; }
+  .photo-item:nth-child(30) { animation-delay: 3.0s; }
+  .photo-item:nth-child(31) { animation-delay: 3.1s; }
+  .photo-item:nth-child(32) { animation-delay: 3.2s; }
+  .photo-item:nth-child(33) { animation-delay: 3.3s; }
+  .photo-item:nth-child(34) { animation-delay: 3.4s; }
+  .photo-item:nth-child(35) { animation-delay: 3.5s; }
+  .photo-item:nth-child(36) { animation-delay: 3.6s; }
+  .photo-item:nth-child(37) { animation-delay: 3.7s; }
+  .photo-item:nth-child(38) { animation-delay: 3.8s; }
+  .photo-item:nth-child(39) { animation-delay: 3.9s; }
+  .photo-item:nth-child(40) { animation-delay: 4.0s; }
+  .photo-item:nth-child(n+41) { animation-delay: 4.1s; }
 
   /* RSVP Table Mobile Styles */
   .rsvp-table {
@@ -1750,8 +1819,14 @@ input::-webkit-outer-spin-button {
   .language-selector {
     position: absolute;
     top: var(--spacing-sm);
-    right: var(--spacing-sm);
+    left: var(--spacing-sm);
     background: transparent;
+  }
+
+  .logout-button {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
   }
 
   nav#main-nav {
@@ -1847,7 +1922,7 @@ input::-webkit-outer-spin-button {
 .rsvp-table th,
 .rsvp-table td {
   padding: 1rem;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #eee;
 }
 
@@ -2007,6 +2082,8 @@ input::-webkit-outer-spin-button {
 
 /* Update RSVP button */
 #submitRSVP {
+  display: block;
+  margin: 2rem auto;
   background: var(--accent);
   color: white;
   font-weight: bold;
@@ -2022,21 +2099,37 @@ input::-webkit-outer-spin-button {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Update RSVP button */
-.login-button {
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
-  font-size: 1.1rem;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+.rsvp-table input[type="checkbox"] {
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  background-color: #fff;
+  position: relative;
+  transition: all 0.2s ease;
 }
 
-.login-button:hover {
-  background: var(--accent-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.rsvp-table input[type="checkbox"]:checked {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.rsvp-table input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-size: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.rsvp-table input[type="checkbox"]:not(:checked) {
+  background-color: #ffe6e6;
+  border-color: #ff6b6b;
 }
 
 .registry-status {

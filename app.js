@@ -71,8 +71,96 @@ const ADMIN_PASSWORDS = {
 };
 
 function capitalize(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-function fuzzyMatches(full, input){
-  return full.toLowerCase().startsWith(input.toLowerCase());
+
+// Add Levenshtein distance function for better fuzzy matching
+function levenshteinDistance(a, b) {
+  if (a.length === 0) return b.length;
+  if (b.length === 0) return a.length;
+
+  const matrix = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1,
+          matrix[i][j - 1] + 1,
+          matrix[i - 1][j] + 1
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+// Add function to calculate match score for a full name
+function calculateNameMatchScore(firstName, lastName, inputFirst, inputLast) {
+  if (!firstName || !lastName || !inputFirst || !inputLast) return 0;
+  
+  // Convert all to lowercase for comparison
+  const fName = firstName.toLowerCase();
+  const lName = lastName.toLowerCase();
+  const inFirst = inputFirst.toLowerCase();
+  const inLast = inputLast.toLowerCase();
+  
+  let score = 0;
+  
+  // First name matching
+  if (fName === inFirst) score += 70;  // Exact match
+  else if (fName.startsWith(inFirst)) score += 60;  // Starts with
+  else if (inFirst.length >= 3 && fName.includes(inFirst)) score += 40;  // Contains
+  else if (inFirst.length >= 3) {
+    const distance = levenshteinDistance(fName, inFirst);
+    const maxDistance = Math.min(2, Math.floor(inFirst.length / 3));
+    if (distance <= maxDistance) score += 40;  // Close match
+  }
+  
+  if (score === 0 && fName[0] === inFirst[0] && fName[1] === inFirst[1]){
+    score += 20;
+  }
+  else if (score === 0 && fName[0] === inFirst[0]) { 
+    score += 10;
+  }
+
+  // if(score > 0){
+  //   console.log(`First ${fName}: `, score)
+  // }
+
+
+  
+  // Last name matching
+  if (lName === inLast) score += 70;  // Exact match
+  else if (lName.startsWith(inLast)) score += 60;  // Starts with
+  else if (inLast.length >= 3 && lName.includes(inLast)) score += 40;  // Contains
+  else if (inLast.length >= 3) {
+    const distance = levenshteinDistance(lName, inLast);
+    const maxDistance = Math.min(2, Math.floor(inLast.length / 3));
+    if (distance <= maxDistance) score += 30;  // Close match
+  }
+  
+  if (score === 0 && lName[0,2] === inLast[0,2]){
+    score += 20;
+  }
+  else if (score === 0 && lName[0] === inLast[0]) {
+    score += 10;
+  }
+  
+  // if(score > 0){
+  //   console.log(`Last ${lName}: `, score)
+  // }
+
+  return score;
 }
 
 // Add language state management
@@ -209,6 +297,7 @@ const content = {
       questionsText: "Call or text either of us with any questions!",
       registry: "REGISTRY",
       registryText: "We haven't created a registry - your presence is truly the only gift we need!",
+      kids: "KIDS",
       kidsFAQ: "We love your children, but due to space restrictions, we respectfully request adults only. If this makes it challenging for you to attend, please reach out to us!"
     },
     pl: {
@@ -223,6 +312,7 @@ const content = {
       questionsText: "Zadzwoń lub napisz do nas z jakimikolwiek pytaniami!",
       registry: "LISTA PREZENTÓW",
       registryText: "Nie stworzyliśmy listy prezentów - Twoja obecność to naprawdę jedyny prezent, którego potrzebujemy!",
+      kids: "DZIECI",
       kidsFAQ: "Kochamy Wasze dzieci, ale z powodu ograniczonej przestrzeni uprzejmie prosimy o obecność tylko dorosłych. Jeśli to sprawia, że trudno Wam będzie przyjechać, prosimy o kontakt!"
     },
     gu: {
@@ -237,6 +327,7 @@ const content = {
       questionsText: "કોઈપણ પ્રશ્નો માટે અમને કૉલ કરો અથવા મેસેજ કરો!",
       registry: "રજિસ્ટ્રી",
       registryText: "અમે રજિસ્ટ્રી બનાવી નથી - તમારી હાજરી ખરેખર એકમાત્ર ભેટ છે જે અમને જોઈએ છે!",
+      kids: "બાળકો",
       kidsFAQ: "અમે તમારા બાળકોને ખૂબ પ્રેમ કરીએ છીએ, પરંતુ જગ્યા અંગેના મર્યાદાને કારણે, અમે વિનમ્રતાપૂર્વક વિનંતી કરીએ છીએ કે કૃપા કરીને માત્ર પ્રૌઢો જ હાજર રહે. જો આ કારણે તમને હાજર રહેવું મુશ્કેલ થાય, તો અમારો સંપર્ક કરો!"
     }
   },
@@ -477,11 +568,16 @@ function renderLanguageSelector() {
   const selector = document.createElement('div');
   selector.className = 'language-selector';
   selector.innerHTML = `
-    <img src="https://flagcdn.com/w40/us.png" alt="en" class="language-flag ${currentLanguage === 'en' ? 'active' : ''}" onclick="setLanguage('en')">
-    <img src="https://flagcdn.com/w40/pl.png" alt="pl" class="language-flag ${currentLanguage === 'pl' ? 'active' : ''}" onclick="setLanguage('pl')">
-    <img src="https://flagcdn.com/w40/in.png" alt="gu" class="language-flag ${currentLanguage === 'gu' ? 'active' : ''}" onclick="setLanguage('gu')">
+    <div class="language-label">Language Selection</div>
+    <div class="language-flags">
+      <img src="https://flagcdn.com/w40/us.png" alt="en" class="language-flag ${currentLanguage === 'en' ? 'active' : ''}" onclick="setLanguage('en')">
+      <img src="https://flagcdn.com/w40/pl.png" alt="pl" class="language-flag ${currentLanguage === 'pl' ? 'active' : ''}" onclick="setLanguage('pl')">
+      <img src="https://flagcdn.com/w40/in.png" alt="gu" class="language-flag ${currentLanguage === 'gu' ? 'active' : ''}" onclick="setLanguage('gu')">
+    </div>
   `;
+
   document.body.appendChild(selector);
+
 }
 
 // --- 3. Login Flow ---
@@ -559,11 +655,14 @@ function renderLogin(){
     const allSnap = await getDocs(collection(db, "users"));
     const matches = allSnap.docs
       .map(d => ({ id: d.id, ...d.data() }))
-      .filter(u =>
-        fuzzyMatches(u.firstName, first) ||
-        fuzzyMatches(u.lastName,  last)
-      )
-      .filter(u => u.firstName !== "Alomi" && u.lastName !== "Siatkowski");
+      .filter(u => u.firstName !== "Alomi" && u.lastName !== "Siatkowski")
+      .map(u => ({
+        ...u,
+        matchScore: calculateNameMatchScore(u.firstName, u.lastName, first, last)
+      }))
+      .filter(u => u.matchScore >= 80) // Only show matches with decent scores
+      .sort((a, b) => b.matchScore - a.matchScore) // Sort by match score
+      .slice(0, 5); // Limit to top 5 matches
   
     if (!matches.length) {
       errDiv.textContent = getContent('login', 'noGuestFound');
@@ -623,6 +722,17 @@ function preloadPhotos() {
     'images/photos/photo31.jpg',
     'images/photos/photo32.jpg',
     'images/photos/photo33.jpg',
+    'images/photos/photo34.jpg',
+    'images/photos/photo35.jpg',
+    'images/photos/photo36.jpg',
+    'images/photos/photo37.jpg',
+    'images/photos/photo38.jpg',
+    'images/photos/photo39.jpg',
+    'images/photos/photo40.jpg',
+    'images/photos/photo41.jpg',
+    'images/photos/photo42.jpg',
+    'images/photos/photo43.jpg',
+    'images/photos/photo44.jpg',
   ];
 
   // Create an array to store the loading promises
@@ -649,6 +759,11 @@ async function finishLogin(uid, isAdmin = false){
   
   // Navigate to home immediately without waiting for preload
   navigate("home");
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'instant'
+  });
 }
 
 // --- 4. Router & Nav ---
@@ -690,15 +805,19 @@ const routes = {
   admin: { 
     title: () => getContent('admin', 'title'),
     render: renderAdmin 
+  },
+  login: {
+    title: () => 'Login',
+    render: renderLogin
   }
 };
 
 function renderNav(active, isAdmin, needsRSVP) {
   const nav = document.getElementById("main-nav");
   nav.style.display = "flex";
-  // Filter routes based on admin status and hide registry
+  // Filter routes based on admin status and hide registry and login
   const availableRoutes = Object.entries(routes).filter(([key]) => 
-    (key !== "admin" || isAdmin) && key !== "registry"
+    (key !== "admin" || isAdmin) && key !== "registry" && key !== "login"
   );
   nav.innerHTML = availableRoutes.map(([k,v]) =>
     `<a data-route="${k}" class="${k===active?'active':''} ${k==='rsvp' && needsRSVP ? 'needs-rsvp':''}">${v.title()}</a>`
@@ -708,13 +827,39 @@ function renderNav(active, isAdmin, needsRSVP) {
   );
 }
 
-async function navigate(route){
-  const uid = sessionStorage.getItem("weddingUser");
-  if (!uid) return renderLogin();
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem("weddingUser");
+  sessionStorage.removeItem("isAdmin");
+  renderLogin();
+}
 
-  const uDoc = await getDoc(doc(db, "users", uid));
-  if (!uDoc.exists()){ sessionStorage.removeItem("weddingUser"); return renderLogin(); }
-  currentUser = { uid, ...uDoc.data() };
+function addLogoutButton() {
+  const logoutBtn = document.createElement('button');
+  logoutBtn.className = 'logout-button';
+  logoutBtn.innerHTML = `<i class="fas fa-sign-out-alt"></i> ${getContent('common', 'logout')}`;
+  logoutBtn.onclick = () => {
+    logout();
+    // remove the logout button
+    const logoutBtn = document.querySelector('.logout-button');
+    if (logoutBtn) logoutBtn.remove();
+  };
+  document.body.appendChild(logoutBtn);
+
+}
+
+async function navigate(route) {
+  const uid = sessionStorage.getItem("weddingUser");
+  if (!uid && route !== 'login') return renderLogin();
+
+  if (route !== 'login') {
+    const uDoc = await getDoc(doc(db, "users", uid));
+    if (!uDoc.exists()) { 
+      sessionStorage.removeItem("weddingUser"); 
+      return renderLogin(); 
+    }
+    currentUser = { uid, ...uDoc.data() };
+  }
 
   // Check if user is admin
   const isAdmin = sessionStorage.getItem("isAdmin") === "true";
@@ -730,13 +875,23 @@ async function navigate(route){
   currentRoute = route;
   
   // Update navigation
-  renderNav(route, isAdmin, !currentUser.hasRSVPed);
+  renderNav(route, isAdmin, !currentUser?.hasRSVPed);
   
   // Show navbar and hide menu button
   const navbar = document.getElementById('main-nav');
   const menuBtn = document.querySelector('.menu-button');
   if (navbar) navbar.classList.remove('hidden');
   if (menuBtn) menuBtn.classList.remove('visible');
+
+  // Handle logout button - only show when logged in
+  const existingLogout = document.querySelector('.logout-button');
+  if (existingLogout) {
+    existingLogout.remove();
+  }
+  
+  if (route !== 'login' && currentUser) {
+    addLogoutButton();
+  }
   
   await routes[route].render(currentUser);
 
@@ -744,7 +899,7 @@ async function navigate(route){
   if (isNewRoute) {
     window.scrollTo({
       top: 0,
-      behavior: 'instant' // Use 'instant' instead of 'smooth' to prevent animation issues
+      behavior: 'instant'
     });
   }
 }
@@ -784,8 +939,11 @@ async function renderHome(user){
   `;
 
   // Add countdown timer with real-time updates
-  const weddingDate = new Date('2025-09-13');
+  const weddingDate = new Date('2025-09-13T23:00:00Z');
   function updateCountdown() {
+
+    if ( currentUser === null ) return;
+    
     if (currentRoute === "home") {
         const now = new Date();
         const diff = weddingDate - now;
@@ -846,9 +1004,18 @@ async function renderSchedule(user) {
       const monthName = getContent('dates', 'months')[ev.start.getMonth()];
       const formattedDate = `${dayName}, ${monthName} ${ev.start.getDate()}`;
       
-      const timeOptions = { hour: 'numeric', minute: '2-digit' };
-      const formattedStartTime = ev.start.toLocaleTimeString('en-US', timeOptions);
-      const formattedEndTime = ev.end.toLocaleTimeString('en-US', timeOptions);
+      // Convert to Los Angeles time
+      const laTime = new Date(ev.start.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+      const laEndTime = new Date(ev.end.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
+      
+      const timeOptions = { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        timeZone: 'America/Los_Angeles'
+      };
+      
+      const formattedStartTime = laTime.toLocaleTimeString('en-US', timeOptions);
+      const formattedEndTime = laEndTime.toLocaleTimeString('en-US', timeOptions);
 
       // Format the address and create Google Maps link
       const address = ev.location.split('<br>').map(part => part.trim()).join(', ');
@@ -988,9 +1155,8 @@ async function renderTravel(){
                 <h3>Hampton Inn & Suites Agoura Hills</h3>
               </div>
             </div>
-            <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301</p>
-            <p class="hotel-code">${getContent('travel', 'groupCode')}: <strong>PSW</strong></p>
-            <a href="https://www.hilton.com/en/hotels/agocahx-hampton-suites-agoura-hills/" 
+            <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301<br>Group Code: PSW</p>
+            <a href="https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=AGOCAHX&arrivalDate=2025-09-11&departureDate=2025-09-13&room1NumAdults=2&aarpRate=" 
                target="_blank" class="hotel-link">
               ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
             </a>
@@ -1128,10 +1294,21 @@ async function renderPhotos() {
         'images/photos/photo31.jpg',
         'images/photos/photo32.jpg',
         'images/photos/photo33.jpg',
+        'images/photos/photo34.jpg',
+        'images/photos/photo35.jpg',
+        'images/photos/photo36.jpg',
+        'images/photos/photo37.jpg',
+        'images/photos/photo38.jpg',
+        'images/photos/photo39.jpg',
+        'images/photos/photo40.jpg',
+        'images/photos/photo41.jpg',
+        'images/photos/photo42.jpg',
+        'images/photos/photo43.jpg',
+        'images/photos/photo44.jpg',
       ];
 
       // Create photo elements
-      photos.forEach((photo, idx) => {
+      const photoElements = photos.map((photo, idx) => {
         const item = document.createElement('div');
         item.className = 'photo-item';
         item.style.animationDelay = (0.1 * idx) + 's'; // Stagger entrance
@@ -1146,61 +1323,81 @@ async function renderPhotos() {
           showLightbox(photo);
         });
 
-        // inside photos.forEach((photo, idx) => { … })
-        item.style.opacity      = 0;            // start invisible
-        item.style.marginBottom = '20px';       // vertical spacing between rows
+        item.style.opacity = 0;
+        item.style.marginBottom = '20px';
 
-        // then append it…
-        photoGallery.appendChild(item);
+        return item;
+      });
 
-        // and kick off a Web-Animations API fly-in+spin:
+      // Append all elements at once
+      photoGallery.append(...photoElements);
+
+      // Initialize Masonry only on desktop
+      let masonry = null;
+      let resizeTimer;
+
+      function initMasonry() {
+        if (masonry) {
+          masonry.destroy();
+          masonry = null;
+        }
+
+        // Wait for all images to load before initializing Masonry
+        const images = photoGallery.getElementsByTagName('img');
+        let loadedImages = 0;
+
+        function checkAllImagesLoaded() {
+          loadedImages++;
+          if (loadedImages === images.length) {
+            masonry = new Masonry('#photoGallery', {
+              itemSelector: '.photo-item',
+              percentPosition: true,
+              transitionDuration: 0,
+              gutter: 10,
+              initLayout: false // Prevent initial layout
+            });
+
+            // Force layout after a short delay
+            setTimeout(() => {
+              if (masonry) {
+                masonry.layout();
+              }
+            }, 100);
+          }
+        }
+
+        // Add load event listeners to all images
+        Array.from(images).forEach(img => {
+          if (img.complete) {
+            checkAllImagesLoaded();
+          } else {
+            img.addEventListener('load', checkAllImagesLoaded);
+            img.addEventListener('error', checkAllImagesLoaded);
+          }
+        });
+      }
+
+      // Initialize on load
+      initMasonry();
+
+      // Reinitialize on resize with debounce
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(initMasonry, 250);
+      });
+
+      // Animate photos in
+      photoElements.forEach((item, idx) => {
         item.animate([
           { transform: 'translateY(50px) rotate(-720deg)', opacity: 0 },
           { transform: 'translateY(-10px) rotate(20deg)', opacity: 1, offset: 0.6 },
           { transform: 'translateY(0)    rotate(0deg)', opacity: 1 }
         ], {
           duration: 800,
-          easing:   'cubic-bezier(.38,.61,.6,1.02)',
-          delay:    idx * 100,    // stagger by 100ms per photo
-          fill:     'forwards'
+          easing: 'cubic-bezier(.38,.61,.6,1.02)',
+          delay: idx * 100,
+          fill: 'forwards'
         });
-
-        photoGallery.appendChild(item);
-      });
-
-      // Initialize Masonry only on desktop
-      let masonry = null;
-      function initMasonry() {
-        if (masonry) {
-          masonry.destroy();
-          masonry = null;
-        }
-      
-        imagesLoaded('#photoGallery', function() {
-          masonry = new Masonry('#photoGallery', {
-            itemSelector: '.photo-item',
-            percentPosition: true,
-            transitionDuration: '0.3s',
-            gutter: 10,
-          });
-      
-          setTimeout(() => {
-            if (masonry) {
-              masonry.layout();
-            }
-          }, 100);
-        });
-      }
-      
-
-      // Initialize on load
-      initMasonry();
-
-      // Reinitialize on resize with debounce
-      let resizeTimer;
-      window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initMasonry, 250);
       });
 
     } catch (error) {
@@ -1264,19 +1461,12 @@ async function renderDetails()  {
 
       ${currentUser.kidsFAQ ? `
       <div class="details-section">
-        <h2><i class="fas fa-child"></i> Kids</h2>
+        <h2><i class="fas fa-child"></i> ${getContent('details', 'kids')}</h2>
         <div class="details-card">
           <p>${getContent('details', 'kidsFAQ')}</p>
         </div>
       </div>
       ` : ''}
-
-      <div class="details-section">
-        <h2><i class="fas fa-gift"></i> ${getContent('details', 'registry')}</h2>
-        <div class="details-card">
-          <p>${getContent('details', 'registryText')}</p>
-        </div>
-      </div>
       
       <div class="details-section">
         <h2><i class="fas fa-question-circle"></i> ${getContent('details', 'questions')}</h2>
@@ -1638,37 +1828,39 @@ async function renderRSVP(user){
         batch.update(userRef, { allergies: input.value.trim() });
       });
 
-      // Handle +1 guest if present
-      if (members.length === 1) {
-        const plusOneFirstName = document.getElementById('plusOneFirstName').value.trim();
-        const plusOneLastName = document.getElementById('plusOneLastName').value.trim();
-        const plusOneAllergies = document.getElementById('plusOneAllergies').value.trim();
+      // Handle +1 guest if present and if the form elements exist
+      const plusOneFirstName = document.getElementById('plusOneFirstName')?.value?.trim();
+      const plusOneLastName = document.getElementById('plusOneLastName')?.value?.trim();
+      const plusOneAllergies = document.getElementById('plusOneAllergies')?.value?.trim();
+      
+      if (user.plusOneAllowed && plusOneFirstName && plusOneLastName) {
+        const eventIds = ["Church", "WelcomeParty", "MainWedding", "SundayBrunchEarly", "SundayBrunchLate"];
+        const plusOneInvites = {};
+        const plusOneRSVPs = {};
         
-        if (plusOneFirstName && plusOneLastName) {
-          const eventIds = ["Church", "WelcomeParty", "MainWedding", "SundayBrunchEarly", "SundayBrunchLate"];
-          const plusOneInvites = {};
-          const plusOneRSVPs = {};
-          
-          // Read from the form for each event
-          for (const evId of eventIds) {
-            const cb = document.querySelector(`.plus-one-event[data-event="${evId}"]`);
-            plusOneInvites[`invited${evId}`] = !!cb;
-            plusOneRSVPs[evId] = cb && cb.checked;
+        // Read from the form for each event
+        for (const evId of eventIds) {
+          const cb = document.querySelector(`.plus-one-event[data-event="${evId}"]`);
+          if (cb) {
+            plusOneInvites[`invited${evId}`] = true;
+            plusOneRSVPs[evId] = cb.checked;
           }
+        }
 
-          const plusOneRef = doc(collection(db, "users"));
-          batch.set(plusOneRef, {
-            firstName: plusOneFirstName,
-            lastName: plusOneLastName,
-            groupId: user.groupId,
-            allergies: plusOneAllergies,
-            isPlusOne: true,
-            plusOneOf: user.uid,
-            hasRSVPed: true,
-            ...plusOneInvites
-          });
+        const plusOneRef = doc(collection(db, "users"));
+        batch.set(plusOneRef, {
+          firstName: plusOneFirstName,
+          lastName: plusOneLastName,
+          groupId: user.groupId,
+          allergies: plusOneAllergies || '',
+          isPlusOne: true,
+          plusOneOf: user.uid,
+          hasRSVPed: true,
+          ...plusOneInvites
+        });
 
-          for (const evId of eventIds) {
+        for (const evId of eventIds) {
+          if (plusOneInvites[`invited${evId}`]) {
             const rsvpRef = doc(db, "rsvps", `${plusOneRef.id}_${evId}`);
             batch.set(rsvpRef, {
               userId: plusOneRef.id,
@@ -1749,6 +1941,12 @@ async function renderAdmin(user) {
       collection(db, "users"),
       orderBy("groupId")
     ));
+
+    // Store users data globally for event handlers
+    window.adminUsers = userSnap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
 
     // Get events from cache
     const events = await cache.getEvents();
@@ -1960,10 +2158,9 @@ async function renderAdmin(user) {
 
     // Add event listeners for user actions
     document.querySelectorAll('.edit-user-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const row = e.target.closest('tr');
-        const userId = row.dataset.userId;
-        showEditUserModal(users.find(u => u.id === userId));
+      btn.addEventListener('click', () => {
+        const userId = btn.closest('tr').dataset.userId;
+        showEditUserModal(window.adminUsers.find(u => u.id === userId));
       });
     });
 
