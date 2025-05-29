@@ -1333,6 +1333,7 @@ async function renderPhotos() {
       // Initialize Masonry only on desktop
       let masonry = null;
       let resizeTimer;
+      let isAnimating = false;
 
       function initMasonry() {
         if (masonry) {
@@ -1352,7 +1353,7 @@ async function renderPhotos() {
               percentPosition: true,
               transitionDuration: 0,
               gutter: 10,
-              initLayout: false // Prevent initial layout
+              initLayout: false
             });
 
             // Force layout after a short delay
@@ -1378,24 +1379,36 @@ async function renderPhotos() {
       // Initialize on load
       initMasonry();
 
-      // Reinitialize on resize with debounce
+      // Reinitialize on resize with debounce, but only if not currently animating
       window.addEventListener('resize', () => {
+        if (isAnimating) return;
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(initMasonry, 250);
       });
 
       // Animate photos in
-      photoElements.forEach((item, idx) => {
-        item.animate([
-          { transform: 'translateY(50px) rotate(-720deg)', opacity: 0 },
-          { transform: 'translateY(-10px) rotate(20deg)', opacity: 1, offset: 0.6 },
-          { transform: 'translateY(0)    rotate(0deg)', opacity: 1 }
-        ], {
-          duration: 800,
-          easing: 'cubic-bezier(.38,.61,.6,1.02)',
-          delay: idx * 100,
-          fill: 'forwards'
+      isAnimating = true;
+      const animationPromises = photoElements.map((item, idx) => {
+        return new Promise(resolve => {
+          item.animate([
+            { transform: 'translateY(50px) rotate(-720deg)', opacity: 0 },
+            { transform: 'translateY(-10px) rotate(20deg)', opacity: 1, offset: 0.6 },
+            { transform: 'translateY(0)    rotate(0deg)', opacity: 1 }
+          ], {
+            duration: 800,
+            easing: 'cubic-bezier(.38,.61,.6,1.02)',
+            delay: idx * 100,
+            fill: 'forwards'
+          }).onfinish = resolve;
         });
+      });
+
+      // After all animations complete, do one final layout
+      Promise.all(animationPromises).then(() => {
+        isAnimating = false;
+        if (masonry) {
+          masonry.layout();
+        }
       });
 
     } catch (error) {
