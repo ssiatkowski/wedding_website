@@ -732,7 +732,6 @@ function preloadPhotos() {
     'images/photos/photo41.jpg',
     'images/photos/photo42.jpg',
     'images/photos/photo43.jpg',
-    'images/photos/photo44.jpg',
   ];
 
   // Create an array to store the loading promises
@@ -1304,7 +1303,6 @@ async function renderPhotos() {
         'images/photos/photo41.jpg',
         'images/photos/photo42.jpg',
         'images/photos/photo43.jpg',
-        'images/photos/photo44.jpg',
       ];
 
       // Create photo elements
@@ -2566,21 +2564,31 @@ window.addEventListener("DOMContentLoaded", ()=>{
   let lastScroll = 0;
   const navbar = document.getElementById('main-nav');
   const menuBtn = document.querySelector('.menu-button');
+  let scrollTimeout;
 
   window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    const navbarHeight = navbar.offsetHeight;
+    // Clear any existing timeout
+    clearTimeout(scrollTimeout);
     
-    // Show/hide navbar and menu button based on scroll position
-    if (currentScroll > navbarHeight) {
-      navbar.classList.add('hidden');
-      menuBtn.classList.add('visible');
-    } else {
-      navbar.classList.remove('hidden');
-      menuBtn.classList.remove('visible');
-    }
-    
-    lastScroll = currentScroll;
+    // Set a new timeout to handle the scroll event
+    scrollTimeout = setTimeout(() => {
+      const currentScroll = window.pageYOffset;
+      const navbarHeight = navbar.offsetHeight;
+      
+      // Only update if we've scrolled more than 10px
+      if (Math.abs(currentScroll - lastScroll) > 10) {
+        // Show/hide navbar and menu button based on scroll position
+        if (currentScroll > navbarHeight) {
+          navbar.classList.add('hidden');
+          menuBtn.classList.add('visible');
+        } else {
+          navbar.classList.remove('hidden');
+          menuBtn.classList.remove('visible');
+        }
+        
+        lastScroll = currentScroll;
+      }
+    }, 50); // Small delay to prevent rapid updates
   });
 
   function closeMenu() {
