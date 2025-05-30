@@ -2247,7 +2247,8 @@ input::-webkit-outer-spin-button {
 .event-attire,
 .event-parking,
 .event-transport,
-.event-ceremony {
+.event-ceremony,
+.event-lunch {
   display: flex;
   align-items: flex-start;
   margin-bottom: var(--spacing-md);
@@ -2261,7 +2262,8 @@ input::-webkit-outer-spin-button {
 .event-attire i,
 .event-parking i,
 .event-transport i,
-.event-ceremony i {
+.event-ceremony i,
+.event-lunch i {
   color: var(--accent);
   margin-right: var(--spacing-sm);
   margin-top: 0.25rem;

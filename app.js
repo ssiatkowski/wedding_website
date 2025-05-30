@@ -468,6 +468,20 @@ const content = {
       casual: "કેઝ્યુઅલ"
     }
   },
+  lunch: {
+    en: {
+      title: "Lunch",
+      text: "After the ceremony, join us for lunch at the church banquet hall.",
+    },
+    pl: {
+      title: "Lunch",
+      text: "Po ślubie, zapraszamy na lunch w sali bankietowej kościoła.",
+    },
+    gu: {
+      title: "લંચ",
+      text: "વિધિ પછી, અમને ચર્ચ બૅન્ક્વેટ હોલમાં લંચ માટે જોડાઓ.",
+    }
+  },
   parking: {
     en: {
       valet: "Free Valet Available"
@@ -1047,6 +1061,14 @@ async function renderSchedule(user) {
 
       if (ev.indianAttire) attireText += ". " + getContent('indianAttire', 'text');
 
+      // handle lunch event
+      let lunchTitle = '';
+      let lunchText = '';
+      if (ev.lunch) {
+        lunchTitle = getContent('lunch', 'title');
+        lunchText = getContent('lunch', 'text');
+      }
+
       let parkingText = ev.parking;
       if (ev.parking === "Free Valet Available") parkingText = getContent('parking', 'valet');
 
@@ -1107,6 +1129,15 @@ async function renderSchedule(user) {
                 <i class="fas fa-car"></i>
                 <div class="transport-details">
                   <strong>Transport:</strong> ${transportText}
+                </div>
+              </div>
+            ` : ''}
+
+            ${ev.lunch ? `
+              <div class="event-lunch">
+                <i class="fas fa-utensils"></i>
+                <div class="lunch-details">
+                  <strong>${lunchTitle}:</strong> ${lunchText}
                 </div>
               </div>
             ` : ''}
@@ -1173,7 +1204,7 @@ async function renderTravel(){
               </div>
             </div>
             <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301<br>Group Code: PSW</p>
-            <a href="https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=AGOCAHX&arrivalDate=2025-09-11&departureDate=2025-09-13&room1NumAdults=2&aarpRate=" 
+            <a href="https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=AGOCAHX&arrivalDate=2025-09-12&departureDate=2025-09-14&room1NumAdults=2&aarpRate=" 
                target="_blank" class="hotel-link">
               ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
             </a>
