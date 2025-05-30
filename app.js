@@ -1376,7 +1376,7 @@ async function renderPhotos() {
         item.style.animationDelay = (0.1 * idx) + 's'; // Stagger entrance
         item.innerHTML = `
           <div class="photo-wrapper">
-            <img src="${photo}" alt="Wedding Photo" loading="lazy">
+            <img src="${photo}" alt="Wedding Photo">
           </div>
         `;
 
@@ -1467,6 +1467,10 @@ async function renderPhotos() {
             fill: 'forwards'
           }).onfinish = resolve;
         });
+      });
+
+      Promise.all(animationPromises).then(() => {
+        if (masonry) masonry.layout();
       });
 
     } catch (error) {
