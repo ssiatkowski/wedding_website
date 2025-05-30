@@ -1419,6 +1419,10 @@ async function renderPhotos() {
               gutter: 10,
             });
 
+            
+            // Force the very first layout now:
+            masonry.layout();
+
             // Force layout after a short delay
             setTimeout(() => {
               if (masonry) {
@@ -1476,9 +1480,6 @@ async function renderPhotos() {
       // After all animations complete, do one final layout
       Promise.all(animationPromises).then(() => {
         isAnimating = false;
-        if (masonry) {
-          masonry.layout();
-        }
       });
 
     } catch (error) {
