@@ -1417,7 +1417,6 @@ async function renderPhotos() {
               percentPosition: true,
               transitionDuration: 0,
               gutter: 10,
-              initLayout: false
             });
 
             // Force layout after a short delay
@@ -1443,7 +1442,7 @@ async function renderPhotos() {
       // Initialize on load
       initMasonry();
 
-      let lastInnerWidth = 0;
+      let lastInnerWidth = window.innerWidth;
 
       // Reinitialize on resize with debounce, but only if not currently animating
       window.addEventListener('resize', () => {
@@ -1466,7 +1465,7 @@ async function renderPhotos() {
             { transform: 'translateY(-10px) rotate(20deg)', opacity: 1, offset: 0.6 },
             { transform: 'translateY(0)    rotate(0deg)', opacity: 1 }
           ], {
-            duration: 800,
+            duration: 1200,
             easing: 'cubic-bezier(.38,.61,.6,1.02)',
             delay: idx * 100,
             fill: 'forwards'
