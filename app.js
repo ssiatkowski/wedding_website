@@ -1443,7 +1443,7 @@ async function renderPhotos() {
       // Initialize on load
       initMasonry();
 
-      let lastInnerWidth = window.innerWidth;
+      let lastInnerWidth = 0;
 
       // Reinitialize on resize with debounce, but only if not currently animating
       window.addEventListener('resize', () => {
