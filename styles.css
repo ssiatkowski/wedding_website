@@ -1762,7 +1762,22 @@ input[type="checkbox"] {
   margin-bottom: 1rem;
 }
 
-/* add at the end of your file */
+html, body {
+  /* allow content to overflow, but disable user panning sideways */
+  overflow-x: auto;            /* keep default overflow so animations show */
+  overscroll-behavior-x: contain; /* no kinetic bounce/scroll in X */
+  touch-action: pan-y;         /* only allow vertical swipes */
+}
+
+.admin-dashboard {
+  touch-action: auto !important; /* allow all touch actions */
+  overscroll-behavior-x: auto; /* no kinetic bounce/scroll in X */
+}
+
+/* hide any stray scrollbar in WebKit */
+body::-webkit-scrollbar {
+  height: 0;
+}
 
 /* Registry Page Container & Header */
 .registry-container {
