@@ -1397,13 +1397,8 @@ async function renderPhotos() {
       // Initialize Masonry only on desktop
       let masonry = null;
       let resizeTimer;
-      let isAnimating = false;
 
       function initMasonry() {
-        if (masonry) {
-          masonry.destroy();
-          masonry = null;
-        }
 
         // Wait for all images to load before initializing Masonry
         const images = photoGallery.getElementsByTagName('img');
@@ -1423,12 +1418,6 @@ async function renderPhotos() {
             // Force the very first layout now:
             masonry.layout();
 
-            // Force layout after a short delay
-            setTimeout(() => {
-              if (masonry) {
-                masonry.layout();
-              }
-            }, 100);
           }
         }
 
@@ -1446,14 +1435,15 @@ async function renderPhotos() {
       // Initialize on load
       initMasonry();
 
-      // Reinitialize on resize with debounce, but only if not currently animating
+      // on resize, *only* trigger a layout, don’t destroy and rebuild
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(initMasonry, 250);
+        resizeTimer = setTimeout(() => {
+          if (masonry) masonry.layout();
+        }, 200);
       });
 
       // Animate photos in
-      isAnimating = true;
       const animationPromises = photoElements.map((item, idx) => {
         return new Promise(resolve => {
           item.animate([
