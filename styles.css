@@ -265,8 +265,18 @@ nav#main-nav a.needs-rsvp {
 
 /* Add responsive styles */
 @media (max-width: 768px) {
-  .login-content {
-    padding: 30px 20px;
+  .login-container {
+    /* orig was calc(40px + var(--spacing-sm)*2), let’s knock it back to just one spacing */
+    padding-top: var(--spacing-sm) !important;
+  }
+
+  #app:has(.login-container) {
+    padding-top: 15px !important;
+  }
+
+  /* if you’ve accidentally added a top‐margin to .login-content, reset that too */
+  .login-container .login-content {
+    margin-top: 0 !important;
   }
   
   .login-header h1 {
@@ -1494,7 +1504,24 @@ input[type="checkbox"] {
   .photo-item:nth-child(38) { animation-delay: 3.8s; }
   .photo-item:nth-child(39) { animation-delay: 3.9s; }
   .photo-item:nth-child(40) { animation-delay: 4.0s; }
-  .photo-item:nth-child(n+41) { animation-delay: 4.1s; }
+  .photo-item:nth-child(41) { animation-delay: 4.1s; }
+  .photo-item:nth-child(42) { animation-delay: 4.2s; }
+  .photo-item:nth-child(43) { animation-delay: 4.3s; }
+  .photo-item:nth-child(44) { animation-delay: 4.4s; }
+  .photo-item:nth-child(45) { animation-delay: 4.5s; }
+  .photo-item:nth-child(46) { animation-delay: 4.6s; }
+  .photo-item:nth-child(47) { animation-delay: 4.7s; }
+  .photo-item:nth-child(48) { animation-delay: 4.8s; }
+  .photo-item:nth-child(49) { animation-delay: 4.9s; }
+  .photo-item:nth-child(50) { animation-delay: 5.0s; }
+  .photo-item:nth-child(51) { animation-delay: 5.1s; }
+  .photo-item:nth-child(52) { animation-delay: 5.2s; }
+  .photo-item:nth-child(53) { animation-delay: 5.3s; }
+  .photo-item:nth-child(54) { animation-delay: 5.4s; }
+  .photo-item:nth-child(55) { animation-delay: 5.5s; }
+  .photo-item:nth-child(56) { animation-delay: 5.6s; }
+  .photo-item:nth-child(57) { animation-delay: 5.7s; }
+  .photo-item:nth-child(58) { animation-delay: 5.8s; }
 
   /* RSVP Table Mobile Styles */
   .rsvp-table {

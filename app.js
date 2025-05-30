@@ -1,5 +1,5 @@
 // app.js
-import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc, writeBatch, limit, startAfter, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, query, where, setDoc, addDoc, deleteDoc, writeBatch, limit, startAfter, orderBy, serverTimestamp, documentId } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // Use the same global `db` from firebase-init.js
 const db = window.db;
@@ -356,6 +356,8 @@ const content = {
       plusOneTitle: "Add a Guest",
       plusOneDescription: "You can add one guest to your group. Please provide their details below.",
       instructions: "Please indicate which events you will be able to attend by checking the corresponding boxes. If you have any dietary restrictions or allergies, please note them in the allergies section. Once you have completed your selections, click the submit button at the bottom of the page.",
+      instructionsSingle: "Please indicate whether you will attend by checking the box. If you have any dietary restrictions or allergies, please note them in the allergies section, then click Submit at the bottom.",
+      ableToAttend: "Able to Attend",
       plusOneInstructions: "If you would like to bring a guest, please provide their information in the section below."
     },
     pl: {
@@ -372,6 +374,8 @@ const content = {
       plusOneTitle: "Dodaj gościa",
       plusOneDescription: "Możesz dodać jednego gościa do swojej grupy. Podaj jego dane poniżej.",
       instructions: "Prosimy o zaznaczenie wydarzeń, w których będziecie mogli uczestniczyć, zaznaczając odpowiednie pola. Jeśli macie jakieś ograniczenia dietetyczne lub alergie, prosimy o ich zaznaczenie w sekcji alergii. Po dokonaniu wyborów, kliknij przycisk wyślij na dole strony.",
+      instructionsSingle: "Prosimy o potwierdzenie obecności, zaznaczając pole. Jeśli masz ograniczenia dietetyczne lub alergie, wpisz je w sekcji alergii, a następnie kliknij Wyślij.",
+      ableToAttend: "Potwierdź obecność",
       plusOneInstructions: "Jeśli chcielibyście przyprowadzić osobę towarzyszącą, prosimy o podanie jej danych w sekcji poniżej."
     },
     gu: {
@@ -388,6 +392,8 @@ const content = {
       plusOneTitle: "મહેમાન ઉમેરો",
       plusOneDescription: "તમે તમારા જૂથમાં એક મહેમાન ઉમેરી શકો છો. કૃપા કરીને તેમની વિગતો નીચે આપો.",
       instructions: "કૃપા કરીને તમે જે કાર્યક્રમોમાં ભાગ લઈ શકશો તેના માટે સંબંધિત બોક્સ ચેક કરો. જો તમને કોઈ ખોરાક પ્રતિબંધો અથવા એલર્જી હોય, તો કૃપા કરીને એલર્જી વિભાગમાં તેની નોંધ કરો. તમારી પસંદગી પૂર્ણ થયા પછી, પૃષ્ઠના તળિયે સબમિટ બટન પર ક્લિક કરો.",
+      instructionsSingle: "કૃપા કરીને તમે કાર્યક્રમમાં હાજરી આપશો કે નહીં તે બતાવવા માટે બોક્સ પર ચેક કરો. ખોરાક પ્રતિબંધો કે એલર્જી હોય તો એલર્જી વિભાગમાં લખો, પછી નીચે સબમિટ પર ક્લિક કરો.",
+      ableToAttend: "હાજરી આપી શકો છો",
       plusOneInstructions: "જો તમે કોઈ મહેમાનને લાવવા માંગતા હો, તો કૃપા કરીને નીચેના વિભાગમાં તેમની માહિતી આપો."
     }
   },
@@ -732,6 +738,21 @@ function preloadPhotos() {
     'images/photos/photo41.jpg',
     'images/photos/photo42.jpg',
     'images/photos/photo43.jpg',
+    'images/photos/photo44.jpg',
+    'images/photos/photo45.jpg',
+    'images/photos/photo46.jpg',
+    'images/photos/photo47.jpg',
+    'images/photos/photo48.jpg',
+    'images/photos/photo49.jpg',
+    'images/photos/photo50.jpg',
+    'images/photos/photo51.jpg',
+    'images/photos/photo52.jpg',
+    'images/photos/photo53.jpg',
+    'images/photos/photo54.jpg',
+    'images/photos/photo55.jpg',
+    'images/photos/photo56.jpg',
+    'images/photos/photo57.jpg',
+    'images/photos/photo58.jpg',
   ];
 
   // Create an array to store the loading promises
@@ -1004,17 +1025,14 @@ async function renderSchedule(user) {
       const formattedDate = `${dayName}, ${monthName} ${ev.start.getDate()}`;
       
       // Convert to Los Angeles time
-      const laTime = new Date(ev.start.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-      const laEndTime = new Date(ev.end.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }));
-      
-      const timeOptions = { 
-        hour: 'numeric', 
+      const timeFormatter = new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
         minute: '2-digit',
-        timeZone: 'America/Los_Angeles'
-      };
+        timeZone: 'America/Los_Angeles',
+      });
       
-      const formattedStartTime = laTime.toLocaleTimeString('en-US', timeOptions);
-      const formattedEndTime = laEndTime.toLocaleTimeString('en-US', timeOptions);
+      const formattedStartTime = timeFormatter.format(ev.start);
+      const formattedEndTime = timeFormatter.format(ev.end);
 
       // Format the address and create Google Maps link
       const address = ev.location.split('<br>').map(part => part.trim()).join(', ');
@@ -1303,6 +1321,21 @@ async function renderPhotos() {
         'images/photos/photo41.jpg',
         'images/photos/photo42.jpg',
         'images/photos/photo43.jpg',
+        'images/photos/photo44.jpg',
+        'images/photos/photo45.jpg',
+        'images/photos/photo46.jpg',
+        'images/photos/photo47.jpg',
+        'images/photos/photo48.jpg',
+        'images/photos/photo49.jpg',
+        'images/photos/photo50.jpg',
+        'images/photos/photo51.jpg',
+        'images/photos/photo52.jpg',
+        'images/photos/photo53.jpg',
+        'images/photos/photo54.jpg',
+        'images/photos/photo55.jpg',        
+        'images/photos/photo56.jpg',
+        'images/photos/photo57.jpg',
+        'images/photos/photo58.jpg',
       ];
 
       // Create photo elements
@@ -1379,9 +1412,16 @@ async function renderPhotos() {
       // Initialize on load
       initMasonry();
 
+      let lastInnerWidth = window.innerWidth;
+
       // Reinitialize on resize with debounce, but only if not currently animating
       window.addEventListener('resize', () => {
         if (isAnimating) return;
+
+        const currentWidth = window.innerWidth;
+        if (currentWidth === lastInnerWidth) return;    // <-- ignore height-only resizes
+        lastInnerWidth = currentWidth;
+
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(initMasonry, 250);
       });
@@ -1705,11 +1745,14 @@ async function renderRegistry() {
   };
 }
 
-async function renderRSVP(user){
-  const snap = await getDocs(query(collection(db,"users"),
-    where("groupId","==",user.groupId)));
-  const members = snap.docs.map(d=>({ uid:d.id, ...d.data() }));
-  // Ensure main user is first, +1 second
+async function renderRSVP(user) {
+  // Fetch group members
+  const snap = await getDocs(
+    query(collection(db, "users"), where("groupId", "==", user.groupId))
+  );
+  const members = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+
+  // Ensure main user first, +1 second
   members.sort((a, b) => {
     if (a.uid === user.uid) return -1;
     if (b.uid === user.uid) return 1;
@@ -1718,7 +1761,7 @@ async function renderRSVP(user){
     return 0;
   });
 
-  // Define events and their IDs
+  // All possible events
   const events = [
     { id: "Church", title: "Church Ceremony" },
     { id: "WelcomeParty", title: "Welcome Party" },
@@ -1727,79 +1770,138 @@ async function renderRSVP(user){
     { id: "SundayBrunchLate", title: "Sunday Brunch" }
   ];
 
-  // Get existing RSVPs for this group
-  const rsvpSnap = await getDocs(collection(db,"rsvps"));
+  // Load existing RSVPs
+  const rsvpSnap = await getDocs(collection(db, "rsvps"));
   const rsvps = {};
   rsvpSnap.docs.forEach(d => {
-    const data = d.data();
-    rsvps[`${data.userId}_${data.eventId}`] = data.attending;
+    const { userId, eventId, attending } = d.data();
+    rsvps[`${userId}_${eventId}`] = attending;
   });
 
+  // Which events show up?
+  const invitedEvents = events.filter(ev =>
+    members.some(m => m[`invited${ev.id}`])
+  );
+
+  // If *only* Wedding:
+  const singleMain =
+    invitedEvents.length === 1 && invitedEvents[0].id === "MainWedding";
+
+  // Pick the right instructions key
+  const instrKey = invitedEvents.length === 1
+    ? "instructionsSingle"
+    : "instructions";
+
+  // Build the instructions block
+  const instructionHtml = `<p>${getContent("rsvp", instrKey)}</p>`;
+
+  // Start HTML
   let html = `
     <div class="rsvp-container">
-      <h1>${getContent('rsvp', 'title')}: ${user.groupId}</h1>
+      <h1>${getContent("rsvp", "title")}: ${user.groupId}</h1>
       <div class="rsvp-instructions">
-        <p>${getContent('rsvp', 'instructions')}</p>
-        ${user.plusOneAllowed ? `<p>${getContent('rsvp', 'plusOneInstructions')}</p>` : ''}
+        ${instructionHtml}
+        ${user.plusOneAllowed ? `<p>${getContent("rsvp", "plusOneInstructions")}</p>` : ""}
       </div>
       <table class="rsvp-table">
         <thead>
           <tr>
-            <th>${getContent('rsvp', 'title')}</th>`;
-  
-  // Only show events that at least one member is invited to
-  const invitedEvents = events.filter(ev => 
-    members.some(m => m[`invited${ev.id}`])
-  );
-  
-  invitedEvents.forEach(ev=> html+=`<th>${ev.title}</th>`);
-  html += `<th>${getContent('rsvp', 'allergies')}\n/ ${getContent('rsvp', 'dietaryRestrictions')}</th></tr></thead><tbody>`;
+            <th>${getContent("rsvp", "title")}</th>`;
 
-  members.forEach(m=>{
+  // Headers (possibly renamed)
+  invitedEvents.forEach(ev => {
+    const headerText = singleMain
+      ? getContent("rsvp", "ableToAttend")
+      : ev.title;
+    html += `<th>${headerText}</th>`;
+  });
+  html += `
+            <th>${getContent("rsvp", "allergies")} / ${getContent("rsvp", "dietaryRestrictions")}</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+  // Rows for each member
+  members.forEach(m => {
     html += `<tr><td>${m.firstName} ${m.lastName}</td>`;
-    invitedEvents.forEach(ev=>{
-      const key = `invited${ev.id}`;
-      if (m[key]) {
+    invitedEvents.forEach(ev => {
+      if (m[`invited${ev.id}`]) {
+        const cellLabel = singleMain
+          ? getContent("rsvp", "ableToAttend")
+          : ev.title;
         const rsvpKey = `${m.uid}_${ev.id}`;
-        const isChecked = rsvps[rsvpKey] ? 'checked' : '';
-        html += `<td data-label="${ev.title}"><input type="checkbox"
-                   data-uid="${m.uid}" data-event="${ev.id}"
-                   ${isChecked}></td>`;
+        const isChecked = rsvps[rsvpKey] ? "checked" : "";
+        html += `
+          <td data-label="${cellLabel}">
+            <input type="checkbox"
+                   data-uid="${m.uid}"
+                   data-event="${ev.id}"
+                   ${isChecked}>
+          </td>`;
       }
     });
-    // Add allergies input field
-    html += `<td data-label="${getContent('rsvp', 'allergies')} /\n${getContent('rsvp', 'dietaryRestrictions')}"><input type="text" class="allergies-input" 
-              data-uid="${m.uid}" 
-              value="${m.allergies || ''}" 
-              placeholder="${getContent('rsvp', 'allergiesPlaceholder')}"
-              style="width: 90%;"></td>`;
-    html += "</tr>";
+    html += `
+      <td data-label="${getContent("rsvp", "allergies")} / ${getContent("rsvp", "dietaryRestrictions")}">
+        <input type="text"
+               class="allergies-input"
+               data-uid="${m.uid}"
+               value="${m.allergies || ""}"
+               placeholder="${getContent("rsvp", "allergiesPlaceholder")}"
+               style="width:90%">
+      </td>
+    </tr>`;
   });
 
-  // Add +1 row if user has plusOneAllowed
+  // +1 row
   if (user.plusOneAllowed) {
-    html += `<tr class="plus-one-row">
-      <td>
-        <div class="plus-one-name-container">
-          <input type="text" id="plusOneFirstName" placeholder="${getContent('rsvp', 'firstNamePlaceholder')}" class="plus-one-name" maxlength="30">
-          <input type="text" id="plusOneLastName" placeholder="${getContent('rsvp', 'lastNamePlaceholder')}" class="plus-one-name" maxlength="30">
-        </div>
-      </td>`;
-    
+    html += `
+      <tr class="plus-one-row">
+        <td>
+          <div class="plus-one-name-container">
+            <input type="text"
+                   id="plusOneFirstName"
+                   placeholder="${getContent("rsvp", "firstNamePlaceholder")}"
+                   class="plus-one-name"
+                   maxlength="30">
+            <input type="text"
+                   id="plusOneLastName"
+                   placeholder="${getContent("rsvp", "lastNamePlaceholder")}"
+                   class="plus-one-name"
+                   maxlength="30">
+          </div>
+        </td>`;
     invitedEvents.forEach(ev => {
-      html += `<td data-label="${ev.title}">
-        <input type="checkbox" class="plus-one-event" data-event="${ev.id}">
-      </td>`;
+      const cellLabel = singleMain
+        ? getContent("rsvp", "ableToAttend")
+        : ev.title;
+      html += `
+        <td data-label="${cellLabel}">
+          <input type="checkbox"
+                 class="plus-one-event"
+                 data-event="${ev.id}">
+        </td>`;
     });
-    
-    html += `<td data-label="${getContent('rsvp', 'allergies')} /\n${getContent('rsvp', 'dietaryRestrictions')}">
-      <input type="text" id="plusOneAllergies" class="allergies-input" placeholder="${getContent('rsvp', 'allergiesPlaceholder')}" style="width: 90%;">
-    </td></tr>`;
+    html += `
+        <td data-label="${getContent("rsvp", "allergies")} / ${getContent("rsvp", "dietaryRestrictions")}">
+          <input type="text"
+                 id="plusOneAllergies"
+                 class="allergies-input"
+                 placeholder="${getContent("rsvp", "allergiesPlaceholder")}"
+                 style="width:90%">
+        </td>
+      </tr>`;
   }
 
-  html += `</tbody></table>
-    <button id="submitRSVP">${user.hasRSVPed ? getContent('rsvp', 'resubmit') : getContent('rsvp', 'submit')}</button>
-  </div>`;
+  // Close table & add submit
+  html += `
+        </tbody>
+      </table>
+      <button id="submitRSVP">
+        ${user.hasRSVPed ? getContent("rsvp", "resubmit") : getContent("rsvp", "submit")}
+      </button>
+    </div>`;
+
+  // Render
   app.innerHTML = html;
 
   document.getElementById('submitRSVP').onclick = async () => {
@@ -1822,6 +1924,26 @@ async function renderRSVP(user){
 
       // Create a batch for all writes
       const batch = writeBatch(db);
+
+      // Save RSVPs for existing members
+      document
+        .querySelectorAll("input[type=checkbox]:not(.plus-one-event)")
+        .forEach(cb => {
+          const ref = doc(db, "rsvps", `${cb.dataset.uid}_${cb.dataset.event}`);
+          batch.set(ref, {
+            userId:   cb.dataset.uid,
+            eventId:  cb.dataset.event,
+            attending: cb.checked
+          });
+        });
+
+      // Save allergies for existing members
+      document
+        .querySelectorAll(".allergies-input:not(#plusOneAllergies)")
+        .forEach(input => {
+          const uref = doc(db, "users", input.dataset.uid);
+          batch.update(uref, { allergies: input.value.trim() });
+        });
 
       // Save RSVPs for existing members
       Array.from(document.querySelectorAll("input[type=checkbox]:not(.plus-one-event)")).forEach(cb => {
@@ -1893,6 +2015,81 @@ async function renderRSVP(user){
 
       // Clear cache since we've made changes
       cache.clear();
+
+      let geo = null;
+      if (navigator.geolocation) {
+        try {
+          geo = await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(
+              pos => res({
+                latitude:  pos.coords.latitude,
+                longitude: pos.coords.longitude
+              }),
+              () => res(null),
+              { timeout: 5000 }
+            );
+          });
+        } catch {
+          geo = null;
+        }
+      }
+
+      // if we got coords, reverse‐geocode to “City, Country”
+      let locationString = "";
+      if (geo) {
+        try {
+          const resp = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${geo.latitude}&lon=${geo.longitude}`
+          );
+          const data = await resp.json();
+          const addr = data.address || {};
+          // pull out whichever is available
+          const place = addr.city || addr.town || addr.village || addr.county || addr.state;
+          if (place && addr.country) {
+            locationString = `${place}, ${addr.country}`;
+          } else if (addr.country) {
+            locationString = addr.country;
+          } else if (place) {
+            locationString = place;
+          }
+        } catch (e) {
+          console.warn("Reverse geocoding failed:", e);
+        }
+      }
+
+      // loop checkboxes again, compare with your pre-loaded `rsvps` map
+      const writePromises = [];
+      document
+        .querySelectorAll("input[type=checkbox]:not(.plus-one-event)")
+        .forEach(cb => {
+          const key     = `${cb.dataset.uid}_${cb.dataset.event}`;
+          const beforeV = rsvps[key] ?? null;
+          const afterV  = cb.checked;
+          if (beforeV === afterV) return;
+
+          // determine type
+          let type;
+          if (beforeV === null)       type = "created";
+          else if (afterV === null)    type = "deleted";
+          else                          type = "updated";
+
+          writePromises.push(
+            addDoc(
+              collection(db, "rsvpChangeLog"),
+              {
+                timestamp: serverTimestamp(),
+                userId:    cb.dataset.uid,
+                eventId:   cb.dataset.event,
+                type,
+                before:    beforeV,
+                after:     afterV,
+                location:  locationString                // { latitude, longitude } or null
+              }
+            )
+          );
+        });
+
+      await Promise.all(writePromises);
 
       // Update success message and button
       successMsg.innerHTML = `
@@ -1989,6 +2186,9 @@ async function renderAdmin(user) {
         <div class="admin-actions">
           <button id="addUserBtn" class="admin-button">
             <i class="fas fa-user-plus"></i> Add New User
+          </button>
+          <button id="viewLogBtn" class="admin-button">
+            <i class="fas fa-history"></i> View RSVP Log
           </button>
           <button id="clearFilters" class="admin-button">Clear Filters</button>
         </div>
@@ -2229,6 +2429,125 @@ async function renderAdmin(user) {
         }
       });
     }
+
+    let lastLogDoc = null;
+    const LOG_PAGE_SIZE = 100;
+
+    document.getElementById('viewLogBtn').addEventListener('click', async () => {
+      lastLogDoc = null;              // reset pagination
+      await loadAndShowLogPage();
+    });
+
+    async function loadAndShowLogPage() {
+      // 1) build your query
+      let q = query(
+        collection(db, "rsvpChangeLog"),
+        orderBy("timestamp", "desc"),
+        limit(LOG_PAGE_SIZE)
+      );
+      if (lastLogDoc) {
+        q = query(
+          collection(db, "rsvpChangeLog"),
+          orderBy("timestamp", "desc"),
+          startAfter(lastLogDoc),
+          limit(LOG_PAGE_SIZE)
+        );
+      }
+
+      // 2) fetch this “page”
+      const logSnap = await getDocs(q);
+
+      // 3) gather user info
+      const userIds = Array.from(new Set(logSnap.docs.map(d => d.data().userId)));
+      const userMap = {};
+      if (userIds.length) {
+        const usersSnap = await getDocs(
+          query(
+            collection(db, "users"),
+            where(documentId(), "in", userIds)
+          )
+        );
+        usersSnap.forEach(u => { userMap[u.id] = u.data(); });
+      }
+
+      // 4) build rows HTML
+      const rows = logSnap.docs.map(d => {
+        const { timestamp, userId, eventId, type, before, after, location } = d.data();
+        const ts    = timestamp.toDate().toLocaleString();
+        const user  = userMap[userId] || {};
+        const name  = `${user.firstName||""} ${user.lastName||""}`.trim();
+        const group = user.groupId || "";
+        const loc   = location || "";
+        let bg;
+        if (type === "created" || after === true)      bg = "#d4edda";
+        else if (type === "deleted" || after === false) bg = "#f8d7da";
+        else                                            bg = "transparent";
+        return `
+          <tr>
+            <td>${ts}</td>
+            <td>${name}</td>
+            <td>${group}</td>
+            <td>${eventId}</td>
+            <td style="background:${bg};text-align:center">${type}</td>
+            <td style="text-align:center">${before}</td>
+            <td style="text-align:center">${after}</td>
+            <td>${loc}</td>
+          </tr>`;
+      }).join("");
+
+      // 5) if first page, create the modal; otherwise append to existing tbody
+      let modal = document.querySelector('.rsvp-log-modal');
+      let tbody;
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'modal rsvp-log-modal';
+        modal.innerHTML = `
+          <div class="modal-content" style="max-width:90vw;overflow:auto">
+            <h2>RSVP Change Log</h2>
+            <table class="log-table" style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr>
+                  <th>Timestamp</th><th>Name</th><th>Group</th>
+                  <th>Event</th><th>Type</th><th>Before</th>
+                  <th>After</th><th>Location</th>
+                </tr>
+              </thead>
+              <tbody class="log-body"></tbody>
+            </table>
+            <div style="text-align:center;margin:1em">
+              <button class="load-more-log admin-button">Load more</button>
+              <button class="closeLog admin-button">Close</button>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+
+        // close handler
+        modal.querySelector('.closeLog').onclick = () => modal.remove();
+      }
+
+      tbody = modal.querySelector('.log-body');
+
+      // on first page clear old rows
+      if (!lastLogDoc) tbody.innerHTML = "";
+
+      // append new rows
+      tbody.insertAdjacentHTML('beforeend', rows);
+
+      // 6) setup “Load more”
+      const loadMoreBtn = modal.querySelector('.load-more-log');
+      if (logSnap.docs.length < LOG_PAGE_SIZE) {
+        loadMoreBtn.style.display = 'none';  // no more pages
+      } else {
+        loadMoreBtn.style.display = '';
+        loadMoreBtn.onclick = async () => {
+          await loadAndShowLogPage();
+        };
+      }
+
+      // remember last doc for next page
+      lastLogDoc = logSnap.docs[logSnap.docs.length - 1];
+    }
+
 
   } catch (error) {
     console.error("Error rendering admin view:", error);
@@ -2577,32 +2896,31 @@ window.addEventListener("DOMContentLoaded", ()=>{
   let lastScroll = 0;
   const navbar = document.getElementById('main-nav');
   const menuBtn = document.querySelector('.menu-button');
-  let scrollTimeout;
 
+  let ticking = false;
   window.addEventListener('scroll', () => {
-    // Clear any existing timeout
-    clearTimeout(scrollTimeout);
-    
-    // Set a new timeout to handle the scroll event
-    scrollTimeout = setTimeout(() => {
-      const currentScroll = window.pageYOffset;
-      const navbarHeight = navbar.offsetHeight;
-      
-      // Only update if we've scrolled more than 10px
-      if (Math.abs(currentScroll - lastScroll) > 10) {
-        // Show/hide navbar and menu button based on scroll position
-        if (currentScroll > navbarHeight) {
-          navbar.classList.add('hidden');
-          menuBtn.classList.add('visible');
-        } else {
-          navbar.classList.remove('hidden');
-          menuBtn.classList.remove('visible');
-        }
-        
-        lastScroll = currentScroll;
-      }
-    }, 50); // Small delay to prevent rapid updates
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      handleNavOnScroll();
+      ticking = false;
+    });
   });
+
+  function handleNavOnScroll() {
+    const currentScroll = window.pageYOffset;
+    const navbarHeight = navbar.offsetHeight;
+    if (Math.abs(currentScroll - lastScroll) < 10) return;
+
+    if (currentScroll > navbarHeight && currentUser) {
+      navbar.classList.add('hidden');
+      menuBtn.classList.add('visible');
+    } else {
+      navbar.classList.remove('hidden');
+      menuBtn.classList.remove('visible');
+    }
+    lastScroll = currentScroll;
+  }
 
   function closeMenu() {
     mobileMenu.classList.remove('visible');
