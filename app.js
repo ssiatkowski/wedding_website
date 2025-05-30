@@ -1446,16 +1446,8 @@ async function renderPhotos() {
       // Initialize on load
       initMasonry();
 
-      let lastInnerWidth = window.innerWidth;
-
       // Reinitialize on resize with debounce, but only if not currently animating
       window.addEventListener('resize', () => {
-        if (isAnimating) return;
-
-        const currentWidth = window.innerWidth;
-        if (currentWidth === lastInnerWidth) return;    // <-- ignore height-only resizes
-        lastInnerWidth = currentWidth;
-
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(initMasonry, 250);
       });
@@ -1475,11 +1467,6 @@ async function renderPhotos() {
             fill: 'forwards'
           }).onfinish = resolve;
         });
-      });
-
-      // After all animations complete, do one final layout
-      Promise.all(animationPromises).then(() => {
-        isAnimating = false;
       });
 
     } catch (error) {
