@@ -1853,7 +1853,7 @@ async function renderRSVP(user) {
       }
     });
     html += `
-      <td data-label="${getContent("rsvp", "allergies")} / ${getContent("rsvp", "dietaryRestrictions")}">
+      <td data-label="${getContent("rsvp", "allergies")} /\n${getContent("rsvp", "dietaryRestrictions")}">
         <input type="text"
                class="allergies-input"
                data-uid="${m.uid}"
@@ -1894,7 +1894,7 @@ async function renderRSVP(user) {
         </td>`;
     });
     html += `
-        <td data-label="${getContent("rsvp", "allergies")} / ${getContent("rsvp", "dietaryRestrictions")}">
+        <td data-label="${getContent("rsvp", "allergies")} /\n${getContent("rsvp", "dietaryRestrictions")}">
           <input type="text"
                  id="plusOneAllergies"
                  class="allergies-input"
@@ -2491,7 +2491,7 @@ async function renderAdmin(user) {
         const group = user.groupId || "";
         const loc   = location || "";
         let bg;
-        if (type === "created" || after === true)      bg = "#d4edda";
+        if (after === true)      bg = "#d4edda";
         else if (type === "deleted" || after === false) bg = "#f8d7da";
         else                                            bg = "transparent";
         return `
