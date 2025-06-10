@@ -484,7 +484,7 @@ const content = {
   },
   parking: {
     en: {
-      valet: "Free Valet Available"
+      valet: "Complimentary Valet Available"
     },
     pl: {
       valet: "Darmowy Parking z Obsługą"
@@ -1070,7 +1070,7 @@ async function renderSchedule(user) {
       }
 
       let parkingText = ev.parking;
-      if (ev.parking === "Free Valet Available") parkingText = getContent('parking', 'valet');
+      if (ev.parking === "Complimentary Valet Available") parkingText = getContent('parking', 'valet');
 
       let transportText = ev.transport;
       if (ev.transport === "Uber/Lyft are available") transportText = getContent('transport', 'basic');
