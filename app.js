@@ -1203,7 +1203,7 @@ async function renderTravel(){
                 <h3>Hampton Inn & Suites Agoura Hills</h3>
               </div>
             </div>
-            <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301<br>Group Code: PSW</p>
+            <p class="hotel-address">30255 Agoura Road, Agoura Hills, CA 91301<br>Select "Special Rates" → Group Code: PSW</p>
             <a href="https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=AGOCAHX&arrivalDate=2025-09-12&departureDate=2025-09-14&room1NumAdults=2&aarpRate=" 
                target="_blank" class="hotel-link">
               ${getContent('travel', 'bookNow')} <i class="fas fa-external-link-alt"></i>
@@ -2443,7 +2443,7 @@ async function renderAdmin(user) {
     }
 
     let lastLogDoc = null;
-    const LOG_PAGE_SIZE = 100;
+    const LOG_PAGE_SIZE = 90;
 
     document.getElementById('viewLogBtn').addEventListener('click', async () => {
       lastLogDoc = null;              // reset pagination
@@ -2473,10 +2473,11 @@ async function renderAdmin(user) {
       const userIds = Array.from(new Set(logSnap.docs.map(d => d.data().userId)));
       const userMap = {};
       if (userIds.length) {
+        const idsToFetch = userIds.slice(0, 30);
         const usersSnap = await getDocs(
           query(
             collection(db, "users"),
-            where(documentId(), "in", userIds)
+            where(documentId(), "in", idsToFetch) // max 30 IDs
           )
         );
         usersSnap.forEach(u => { userMap[u.id] = u.data(); });
