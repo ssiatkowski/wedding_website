@@ -288,7 +288,7 @@ const content = {
     en: {
       title: "Details",
       rsvp: "RSVP",
-      rsvpText: "Please RSVP by July 13 so we can have an accurate headcount!",
+      rsvpText: "Please RSVP so we can have an accurate headcount!",
       location: "LOCATION",
       locationText: "Our ceremony and reception are outdoors (though you can go in the house at any time) on a turf lawn. Please choose shoes that will be comfortable to wear on turf! Due to city noise ordinances we can't have music outdoors after 10pm; at that time we'll start the after party inside the house.",
       weather: "WEATHER",
@@ -2108,7 +2108,7 @@ async function renderRSVP(user) {
         <div class="success-content">
           <i class="fas fa-check-circle"></i>
           <p>Thank you for your RSVP! Your response has been recorded.</p>
-          <p class="success-subtitle">You can update your response anytime before July 13, 2025.</p>
+          <p class="success-subtitle">You can update your response if needed.</p>
         </div>
       `;
       successMsg.style.display = 'block';
